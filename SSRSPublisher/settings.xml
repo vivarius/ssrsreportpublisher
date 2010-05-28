@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Projects>
+  <Project ItemNo="1" >
+    <srvsql1 Name="srv-sql3"/>
+    <srvsql2 Name="srv-sql2"/>
+  </Project>
+  <Project ItemNo="2">
+    <srvsql1 Name="srv-sql1"/>
+    <srvsql2 Name="srv-sql3"/>
+  </Project>
+</Projects>
