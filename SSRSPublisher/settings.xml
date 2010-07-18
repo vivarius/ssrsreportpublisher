@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Projects>
   <Project ItemNo="1" >
-    <srvsql1 Name="srv-sql3"/>
-    <srvsql2 Name="srv-sql2"/>
+    <srvsql1 Name="srv-sql3" URL="http://srv-sql3/ReportServer/ReportService2005.asmx"/>
+    <srvsql2 Name="srv-sql3" URL="http://srv-sql3/ReportServer/ReportService2005.asmx"/>
   </Project>
   <Project ItemNo="2">
-    <srvsql1 Name="srv-sql1"/>
-    <srvsql2 Name="srv-sql3"/>
+    <srvsql1 Name="srv-sql1" URL="http://srv-sql1/ReportServer/ReportService2005.asmx"/>
+    <srvsql2 Name="srv-sql3" URL="http://srv-sql3/ReportServer/ReportService2005.asmx"/>
   </Project>
 </Projects>

@@ -50,26 +50,26 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(16, 25);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(32, 13);
+            this.label1.Size = new System.Drawing.Size(36, 13);
             this.label1.TabIndex = 6;
-            this.label1.Text = "Nom:";
+            this.label1.Text = "Label:";
             // 
             // btCancel
             // 
             this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btCancel.Location = new System.Drawing.Point(204, 127);
+            this.btCancel.Location = new System.Drawing.Point(204, 118);
             this.btCancel.Name = "btCancel";
-            this.btCancel.Size = new System.Drawing.Size(75, 23);
+            this.btCancel.Size = new System.Drawing.Size(75, 32);
             this.btCancel.TabIndex = 5;
-            this.btCancel.Text = "Annuler";
+            this.btCancel.Text = "Cancel";
             this.btCancel.UseVisualStyleBackColor = true;
             // 
             // btOK
             // 
             this.btOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btOK.Location = new System.Drawing.Point(102, 127);
+            this.btOK.Location = new System.Drawing.Point(102, 118);
             this.btOK.Name = "btOK";
-            this.btOK.Size = new System.Drawing.Size(75, 23);
+            this.btOK.Size = new System.Drawing.Size(75, 32);
             this.btOK.TabIndex = 4;
             this.btOK.Text = "OK";
             this.btOK.UseVisualStyleBackColor = true;
@@ -103,9 +103,9 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(16, 77);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(98, 13);
+            this.label3.Size = new System.Drawing.Size(56, 13);
             this.label3.TabIndex = 10;
-            this.label3.Text = "Base des données:";
+            this.label3.Text = "Database:";
             // 
             // frmDataSourceDetail
             // 

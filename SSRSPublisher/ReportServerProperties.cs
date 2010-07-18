@@ -28,7 +28,7 @@ namespace SSRSPublisher
                 return _reportsServerInstance ?? (_reportsServerInstance = new ReportingService2005
                                                                                {
                                                                                    Credentials = System.Net.CredentialCache.DefaultCredentials,
-                                                                                   Url = ReportServer + "/ReportService2005.asmx"
+                                                                                   Url = ReportServer
                                                                                });
             }
         }
@@ -90,7 +90,7 @@ namespace SSRSPublisher
                                      null);
                 resVal = true;
             }
-            catch (System.Web.Services.Protocols.SoapException ex)
+            catch (Exception ex)
             {
                 resVal = false;
             }
@@ -117,18 +117,16 @@ namespace SSRSPublisher
             return resVal;
         }
 
-        private DataSource GetDataSource(string sharedDataSourcePath, string dataSourceName)
+        public DataSource GetDataSource(string sharedDataSourcePath, string dataSourceName)
         {
-            DataSourceReference dataSourceReference = new DataSourceReference
-                                                          {
-                                                              Reference = sharedDataSourcePath + dataSourceName
-                                                          };
-            DataSource dataSource = new DataSource
-                                        {
-                                            Name = dataSourceName,
-                                            Item = dataSourceReference
-                                        };
-            return dataSource;
+            var dataSources = ReportsServerInstance.GetItemDataSources(sharedDataSourcePath);
+            
+            return dataSources.Where(dataSource => dataSource.Name == dataSourceName).FirstOrDefault();
+        }
+
+        public DataSourceDefinition GetDataSourceDefinition(string sharedDataSourcePath)
+        {
+            return ReportsServerInstance.GetDataSourceContents(sharedDataSourcePath);
         }
 
         public bool AttachDataSourceToReport(string _dataSourceName, string _dataSourcePath, string _report, string _reportLocation)
@@ -140,9 +138,9 @@ namespace SSRSPublisher
                 DataSource[] dataSources = _reportsServerInstance.GetItemDataSources(_reportLocation + "/" + _report);
 
                 DataSourceReference dataSourceReference = new DataSourceReference
-                {
-                    Reference = _dataSourcePath + _dataSourceName
-                };
+                                                                                {
+                                                                                    Reference = _dataSourcePath + _dataSourceName
+                                                                                };
 
                 dataSources[0].Item = dataSourceReference;
 

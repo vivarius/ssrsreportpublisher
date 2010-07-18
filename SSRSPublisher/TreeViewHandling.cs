@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using SSRSPublisher.ReportService2005;
 
@@ -24,54 +25,64 @@ namespace SSRSPublisher
 
         private static TreeNode FillTreeView(string Path, TreeNode ParentNode, ReportingService2005 reportingService2005, bool showDataSource)
         {
-            CatalogItem[] catalogItems = reportingService2005.ListChildren(Path, false);
-            foreach (CatalogItem catalogItem in catalogItems)
+            try
             {
-                switch (catalogItem.Type)
+
+
+                CatalogItem[] catalogItems = reportingService2005.ListChildren(Path, false);
+                foreach (CatalogItem catalogItem in catalogItems)
                 {
-                    case ItemTypeEnum.Folder:
-                        TreeNode SubNode = new TreeNode(catalogItem.Name)
-                        {
-                            ImageIndex = 0,
-                            Tag = catalogItem,
-                            Name = catalogItem.Path
-                        };
+                    switch (catalogItem.Type)
+                    {
+                        case ItemTypeEnum.Folder:
+                            TreeNode SubNode = new TreeNode(catalogItem.Name)
+                            {
+                                ImageIndex = 0,
+                                // Tag = catalogItem,
+                                Name = catalogItem.Path
+                            };
 
-                        SubNode.Tag = catalogItem.Type;
-                        SubNode.SelectedImageIndex = SubNode.ImageIndex;
-                        ParentNode.Nodes.Add(FillTreeView(catalogItem.Path, SubNode, reportingService2005, showDataSource));
-                        break;
-                    case ItemTypeEnum.Report:
-                        if (showDataSource)
+                            SubNode.Tag = catalogItem.Type;
+                            SubNode.SelectedImageIndex = SubNode.ImageIndex;
+                            ParentNode.Nodes.Add(FillTreeView(catalogItem.Path, SubNode, reportingService2005, showDataSource));
                             break;
-                        TreeNode ReportNode = new TreeNode(catalogItem.Name)
-                        {
-                            ImageIndex = 1,
-                            Tag = catalogItem,
-                            Name = catalogItem.Path
-                        };
+                        case ItemTypeEnum.Report:
+                            //if (showDataSource)
+                            //    break;
+                            TreeNode ReportNode = new TreeNode(catalogItem.Name)
+                            {
+                                ImageIndex = 1,
+                                //Tag = catalogItem,
+                                Name = catalogItem.Path
+                            };
 
-                        ReportNode.Tag = catalogItem.Type;
-                        ReportNode.SelectedImageIndex = ReportNode.ImageIndex;
-                        ParentNode.Nodes.Add(ReportNode);
-                        break;
-                    case ItemTypeEnum.DataSource:
-                        if (showDataSource)
-                        {
-                            TreeNode DataSourceNode = new TreeNode(catalogItem.Name)
-                                                          {
-                                                              ImageIndex = 2,
-                                                              Tag = catalogItem,
-                                                              Name = catalogItem.Path
-                                                          };
+                            ReportNode.Tag = catalogItem.Type;
+                            ReportNode.SelectedImageIndex = ReportNode.ImageIndex;
+                            ParentNode.Nodes.Add(ReportNode);
+                            break;
+                        case ItemTypeEnum.DataSource:
+                            if (showDataSource)
+                            {
+                                TreeNode DataSourceNode = new TreeNode(catalogItem.Name)
+                                                              {
+                                                                  ImageIndex = 2,
+                                                                  //Tag = catalogItem,
+                                                                  Name = catalogItem.Path,
+                                                                  Tag = catalogItem.Type,
+                                                              };
 
-                            DataSourceNode.Tag = catalogItem.Type;
-                            DataSourceNode.SelectedImageIndex = DataSourceNode.ImageIndex;
-                            ParentNode.Nodes.Add(DataSourceNode);
-                        }
-                        break;
+                                DataSourceNode.SelectedImageIndex = DataSourceNode.ImageIndex;
+                                ParentNode.Nodes.Add(DataSourceNode);
+                            }
+                            break;
+                    }
                 }
             }
+            catch (Exception exception)
+            {
+                MessageBox.Show(string.Format(@"The Reports Server {0} is not available. Exception details: {1}", reportingService2005.Url, exception.Message));
+            }
+
             return ParentNode;
         }
 

@@ -113,7 +113,7 @@ namespace SSRSPublisher
             // 
             // btLoadServers
             // 
-            this.btLoadServers.Location = new System.Drawing.Point(267, 12);
+            this.btLoadServers.Location = new System.Drawing.Point(394, 7);
             this.btLoadServers.Name = "btLoadServers";
             this.btLoadServers.Size = new System.Drawing.Size(44, 23);
             this.btLoadServers.TabIndex = 1;
@@ -124,9 +124,9 @@ namespace SSRSPublisher
             // cmbProject
             // 
             this.cmbProject.FormattingEnabled = true;
-            this.cmbProject.Location = new System.Drawing.Point(3, 14);
+            this.cmbProject.Location = new System.Drawing.Point(3, 9);
             this.cmbProject.Name = "cmbProject";
-            this.cmbProject.Size = new System.Drawing.Size(258, 21);
+            this.cmbProject.Size = new System.Drawing.Size(384, 21);
             this.cmbProject.TabIndex = 0;
             // 
             // tvReportServerSource
@@ -151,35 +151,35 @@ namespace SSRSPublisher
             this.downloadDossierToolStripMenuItem,
             this.suppRapportDossierToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(188, 92);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(182, 114);
             // 
             // creationDataSourceToolStripMenuItem
             // 
             this.creationDataSourceToolStripMenuItem.Name = "creationDataSourceToolStripMenuItem";
             this.creationDataSourceToolStripMenuItem.ShowShortcutKeys = false;
-            this.creationDataSourceToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.creationDataSourceToolStripMenuItem.Text = "Création DataSource";
+            this.creationDataSourceToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.creationDataSourceToolStripMenuItem.Text = "Create/Edit DataSource";
             this.creationDataSourceToolStripMenuItem.Click += new System.EventHandler(this.creationDataSourceToolStripMenuItem_Click);
             // 
             // creationDossierToolStripMenuItem
             // 
             this.creationDossierToolStripMenuItem.Name = "creationDossierToolStripMenuItem";
-            this.creationDossierToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.creationDossierToolStripMenuItem.Text = "Création Dossier";
+            this.creationDossierToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.creationDossierToolStripMenuItem.Text = "Create Folder";
             this.creationDossierToolStripMenuItem.Click += new System.EventHandler(this.creationDossierToolStripMenuItem_Click);
             // 
             // downloadDossierToolStripMenuItem
             // 
             this.downloadDossierToolStripMenuItem.Name = "downloadDossierToolStripMenuItem";
-            this.downloadDossierToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.downloadDossierToolStripMenuItem.Text = "Téléchargement dossier";
+            this.downloadDossierToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.downloadDossierToolStripMenuItem.Text = "Transfer...";
             this.downloadDossierToolStripMenuItem.Click += new System.EventHandler(this.downloadDossierToolStripMenuItem_Click);
             // 
             // suppRapportDossierToolStripMenuItem
             // 
             this.suppRapportDossierToolStripMenuItem.Name = "suppRapportDossierToolStripMenuItem";
-            this.suppRapportDossierToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.suppRapportDossierToolStripMenuItem.Text = "Supp. rapport / dossier";
+            this.suppRapportDossierToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.suppRapportDossierToolStripMenuItem.Text = "Delete report / folder";
             this.suppRapportDossierToolStripMenuItem.Click += new System.EventHandler(this.suppRapportDossierToolStripMenuItem_Click);
             // 
             // imageList1
@@ -227,9 +227,9 @@ namespace SSRSPublisher
             // 
             this.btnCancel.Location = new System.Drawing.Point(806, 613);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 47);
+            this.btnCancel.Size = new System.Drawing.Size(75, 35);
             this.btnCancel.TabIndex = 0;
-            this.btnCancel.Text = "&Sortir";
+            this.btnCancel.Text = "&Exit";
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
@@ -237,7 +237,7 @@ namespace SSRSPublisher
             // 
             this.btnOK.Location = new System.Drawing.Point(3, 613);
             this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(85, 47);
+            this.btnOK.Size = new System.Drawing.Size(85, 35);
             this.btnOK.TabIndex = 1;
             this.btnOK.Text = "&Transfer";
             this.btnOK.UseVisualStyleBackColor = true;
@@ -245,9 +245,9 @@ namespace SSRSPublisher
             // 
             // pbTransfer
             // 
-            this.pbTransfer.Location = new System.Drawing.Point(94, 625);
+            this.pbTransfer.Location = new System.Drawing.Point(94, 623);
             this.pbTransfer.Name = "pbTransfer";
-            this.pbTransfer.Size = new System.Drawing.Size(706, 23);
+            this.pbTransfer.Size = new System.Drawing.Size(706, 20);
             this.pbTransfer.TabIndex = 6;
             this.pbTransfer.Visible = false;
             // 
@@ -259,16 +259,16 @@ namespace SSRSPublisher
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(884, 660);
-            this.Controls.Add(this.pbTransfer);
+            this.ClientSize = new System.Drawing.Size(884, 655);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.btnOK);
             this.Controls.Add(this.btnCancel);
+            this.Controls.Add(this.pbTransfer);
+            this.Controls.Add(this.btnOK);
             this.MaximumSize = new System.Drawing.Size(892, 687);
             this.MinimumSize = new System.Drawing.Size(892, 687);
             this.Name = "frmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Mediapost :: SSRS Publisher ";
+            this.Text = "SSRS Publisher ";
             this.Load += new System.EventHandler(this.ReportServer_Load);
             this.Resize += new System.EventHandler(this.frmMain_Resize);
             this.groupBox1.ResumeLayout(false);

@@ -76,7 +76,7 @@
             this.btCancel.Name = "btCancel";
             this.btCancel.Size = new System.Drawing.Size(104, 23);
             this.btCancel.TabIndex = 2;
-            this.btCancel.Text = "&Annuler";
+            this.btCancel.Text = "&Cancel";
             this.btCancel.UseVisualStyleBackColor = true;
             // 
             // frmDataSource

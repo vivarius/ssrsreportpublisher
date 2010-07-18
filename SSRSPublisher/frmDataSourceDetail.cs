@@ -5,9 +5,23 @@ namespace SSRSPublisher
     public partial class frmDataSourceDetail : Form
     {
 
-        public string DataSourceName { get; set; }
-        public string SQLServer { get; set; }
-        public string DBName { get; set; }
+        public string DataSourceName
+        {
+            get { return txNom.Text.Trim(); }
+            set { txNom.Text = value; }
+        }
+
+        public string SQLServer
+        {
+            get { return txServer.Text.Trim(); }
+            set { txServer.Text = value; }
+        }
+
+        public string DBName
+        {
+            get { return txDBName.Text.Trim(); }
+            set { txDBName.Text = value; }
+        }
 
         public frmDataSourceDetail()
         {
