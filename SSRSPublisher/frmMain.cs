@@ -14,7 +14,6 @@ namespace SSRSPublisher
         #region Properties
         public ReportServerProperties ReportServerSource { get; set; }
         public ReportServerProperties ReportServerDestination { get; set; }
-        //private BackgroundWorker backgroundWorker = new BackgroundWorker();
         #endregion
 
         #region ctor
@@ -36,7 +35,7 @@ namespace SSRSPublisher
 
         void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            this.Cursor = Cursors.Arrow;
+            Cursor = Cursors.Arrow;
         }
 
         void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -92,8 +91,8 @@ namespace SSRSPublisher
                         break;
                     case ItemTypeEnum.Folder:
                         if (ReportServerDestination.CheckItemExist(ItemTypeEnum.Folder,
-                                                                tvReportServerDestination.SelectedNode.FullPath.Replace(tvReportServerDestination.Nodes[0].Text, string.Empty).Replace(@"\", "/"),
-                                                                checkedNode.Text))
+                                                                   tvReportServerDestination.SelectedNode.FullPath.Replace(tvReportServerDestination.Nodes[0].Text, string.Empty).Replace(@"\", "/"),
+                                                                   checkedNode.Text))
                         {
                             ReportServerDestination.CreateFolder(tvReportServerDestination.SelectedNode.FullPath.Replace(tvReportServerDestination.Nodes[0].Text, string.Empty), checkedNode.Text);
                         }
@@ -127,7 +126,7 @@ namespace SSRSPublisher
 
         private void btLoadServers_Click(object sender, EventArgs e)
         {
-            this.Cursor = Cursors.WaitCursor;
+            Cursor = Cursors.WaitCursor;
             if (backgroundWorker1.IsBusy != true)
             {
                 backgroundWorker1.RunWorkerAsync();
@@ -151,7 +150,7 @@ namespace SSRSPublisher
 
         private void suppRapportDossierToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure for item deletion?", "Attention", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show(@"Are you sure for item deletion?", @"Attention", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 DeleteItem((TreeView)((ContextMenuStrip)((ToolStripMenuItem)sender).Owner).SourceControl);
         }
 
@@ -184,9 +183,8 @@ namespace SSRSPublisher
                                                             }));
                 }
 
-                foreach (var project in
-                    tagValue.Where(project => project.Server1 == cmbBoxValue[0].Trim() &&
-                                   project.Server2 == cmbBoxValue[1].Trim()))
+                foreach (var project in tagValue.Where(project => project.Server1 == cmbBoxValue[0].Trim() &&
+                                                                  project.Server2 == cmbBoxValue[1].Trim()))
                 {
                     selectedProject = project;
                     break;
@@ -353,24 +351,24 @@ namespace SSRSPublisher
             {
                 string[] connectionString = dataSourceDefinition.ConnectString.Split(';');
 
-                foreach (var item in connectionString)
+                foreach (string[] itemDict in connectionString.Select(item => item.Split('=')))
                 {
-                    string[] itemDict = item.Split('=');
-                    foreach (var sItem in itemDict)
-                    {
-                        if (sItem == "Data Source")
-                            frmDataSourceDetail.DataSourceName = sItem[1].ToString();
-                    }
+                    if (itemDict[0] == "Data Source")
+                        frmDataSourceDetail.SQLServer = itemDict[1];
+                    if (itemDict[0] == "Initial Catalog")
+                        frmDataSourceDetail.DBName = itemDict[1];
                 }
 
-                frmDataSourceDetail.DataSourceName = dataSourceDefinition.ConnectString;
-                frmDataSourceDetail.SQLServer = dataSourceDefinition.ConnectString;
-                frmDataSourceDetail.DataSourceName = dataSourceDefinition.ConnectString;
+                frmDataSourceDetail.DataSourceName = treeView.SelectedNode.Text;
 
                 if (frmDataSourceDetail.ShowDialog() == DialogResult.OK)
                 {
+                    string folder =
+                        treeView.SelectedNode.FullPath.Replace(treeView.Nodes[0].Text, string.Empty).Replace(@"\", "/").
+                            Replace(treeView.SelectedNode.Text, string.Empty);
+                    ReportServerDestination.DeleteItem(ItemTypeEnum.DataSource, folder.Substring(0, folder.Length - 1), treeView.SelectedNode.Text);
                     MessageBox.Show(ReportServerDestination.CreateDataSource(frmDataSourceDetail.DataSourceName,
-                                                                             tvReportServerDestination.SelectedNode.FullPath.Replace(tvReportServerDestination.Nodes[0].Text, string.Empty).Replace(@"\", "/"),
+                                                                             folder.Substring(0, folder.Length - 1),
                                                                              frmDataSourceDetail.SQLServer,
                                                                              frmDataSourceDetail.DBName)
                                         ? "DataSource modified succesfully"

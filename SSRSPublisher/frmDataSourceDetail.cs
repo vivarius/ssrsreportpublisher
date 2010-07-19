@@ -4,6 +4,8 @@ namespace SSRSPublisher
 {
     public partial class frmDataSourceDetail : Form
     {
+        #region Properties
+        public bool IsNewDataSource { get; set; }
 
         public string DataSourceName
         {
@@ -22,11 +24,14 @@ namespace SSRSPublisher
             get { return txDBName.Text.Trim(); }
             set { txDBName.Text = value; }
         }
+        #endregion
 
+        #region ctor
         public frmDataSourceDetail()
         {
             InitializeComponent();
         }
+        #endregion
 
         private void btOK_Click(object sender, System.EventArgs e)
         {

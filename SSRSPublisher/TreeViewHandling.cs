@@ -27,8 +27,6 @@ namespace SSRSPublisher
         {
             try
             {
-
-
                 CatalogItem[] catalogItems = reportingService2005.ListChildren(Path, false);
                 foreach (CatalogItem catalogItem in catalogItems)
                 {
