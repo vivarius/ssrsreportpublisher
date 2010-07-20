@@ -37,7 +37,7 @@
             // btOK
             // 
             this.btOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btOK.Location = new System.Drawing.Point(60, 75);
+            this.btOK.Location = new System.Drawing.Point(58, 52);
             this.btOK.Name = "btOK";
             this.btOK.Size = new System.Drawing.Size(75, 35);
             this.btOK.TabIndex = 0;
@@ -48,7 +48,7 @@
             // btCancel
             // 
             this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btCancel.Location = new System.Drawing.Point(162, 75);
+            this.btCancel.Location = new System.Drawing.Point(160, 52);
             this.btCancel.Name = "btCancel";
             this.btCancel.Size = new System.Drawing.Size(75, 35);
             this.btCancel.TabIndex = 1;
@@ -58,7 +58,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 35);
+            this.label1.Location = new System.Drawing.Point(11, 12);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(38, 13);
             this.label1.TabIndex = 2;
@@ -66,7 +66,7 @@
             // 
             // txNom
             // 
-            this.txNom.Location = new System.Drawing.Point(52, 35);
+            this.txNom.Location = new System.Drawing.Point(50, 12);
             this.txNom.Name = "txNom";
             this.txNom.Size = new System.Drawing.Size(214, 20);
             this.txNom.TabIndex = 3;
@@ -77,7 +77,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btCancel;
-            this.ClientSize = new System.Drawing.Size(292, 131);
+            this.ClientSize = new System.Drawing.Size(292, 98);
             this.ControlBox = false;
             this.Controls.Add(this.txNom);
             this.Controls.Add(this.label1);

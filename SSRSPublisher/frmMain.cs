@@ -159,9 +159,28 @@ namespace SSRSPublisher
             txItemPath.Text = e.Node.FullPath.Replace(e.Node.TreeView.Nodes[0].Text, string.Empty);
         }
 
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            PreviewReport((TreeView)((ContextMenuStrip)((ToolStripMenuItem)sender).Owner).SourceControl);
+        }
+
+       
+
         #endregion
 
         #region Methods
+
+        private void PreviewReport(TreeView treeView)
+        {
+            if ((ItemTypeEnum) (treeView.SelectedNode.Tag) != ItemTypeEnum.Report) return;
+
+            using (var frmReportViewer = new frmReportViewer())
+            {
+                //frmReportViewer.FillTreeview(ReportServerDestination.ReportsServerInstance);
+                frmReportViewer.ShowDialog();
+            }
+        }
+
         private void LoadTreeViewPanelsFromSrv()
         {
             Cursor.Current = Cursors.WaitCursor;
@@ -336,7 +355,7 @@ namespace SSRSPublisher
 
             if ((ItemTypeEnum)(treeView.SelectedNode.Tag) != ItemTypeEnum.DataSource)
             {
-                MessageBox.Show("Please choose a Datasource");
+                MessageBox.Show(@"Please choose a Datasource");
                 return;
             }
 
@@ -400,6 +419,8 @@ namespace SSRSPublisher
                 MessageBox.Show(@"Please choose a folder");
         }
         #endregion
+
+
     }
 }
 

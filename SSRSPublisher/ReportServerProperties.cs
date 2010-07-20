@@ -90,7 +90,7 @@ namespace SSRSPublisher
                                      null);
                 resVal = true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 resVal = false;
             }
@@ -154,7 +154,7 @@ namespace SSRSPublisher
 
                 resVal = true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 resVal = false;
             }

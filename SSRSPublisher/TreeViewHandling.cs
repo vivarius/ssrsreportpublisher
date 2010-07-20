@@ -33,35 +33,35 @@ namespace SSRSPublisher
                     switch (catalogItem.Type)
                     {
                         case ItemTypeEnum.Folder:
-                            TreeNode SubNode = new TreeNode(catalogItem.Name)
+                            TreeNode folderNode = new TreeNode(catalogItem.Name)
                             {
                                 ImageIndex = 0,
                                 // Tag = catalogItem,
                                 Name = catalogItem.Path
                             };
 
-                            SubNode.Tag = catalogItem.Type;
-                            SubNode.SelectedImageIndex = SubNode.ImageIndex;
-                            ParentNode.Nodes.Add(FillTreeView(catalogItem.Path, SubNode, reportingService2005, showDataSource));
+                            folderNode.Tag = catalogItem.Type;
+                            folderNode.SelectedImageIndex = folderNode.ImageIndex;
+                            ParentNode.Nodes.Add(FillTreeView(catalogItem.Path, folderNode, reportingService2005, showDataSource));
                             break;
                         case ItemTypeEnum.Report:
                             //if (showDataSource)
                             //    break;
-                            TreeNode ReportNode = new TreeNode(catalogItem.Name)
+                            TreeNode reportNode = new TreeNode(catalogItem.Name)
                             {
                                 ImageIndex = 1,
                                 //Tag = catalogItem,
                                 Name = catalogItem.Path
                             };
 
-                            ReportNode.Tag = catalogItem.Type;
-                            ReportNode.SelectedImageIndex = ReportNode.ImageIndex;
-                            ParentNode.Nodes.Add(ReportNode);
+                            reportNode.Tag = catalogItem.Type;
+                            reportNode.SelectedImageIndex = reportNode.ImageIndex;
+                            ParentNode.Nodes.Add(reportNode);
                             break;
                         case ItemTypeEnum.DataSource:
                             if (showDataSource)
                             {
-                                TreeNode DataSourceNode = new TreeNode(catalogItem.Name)
+                                TreeNode dataSourceNode = new TreeNode(catalogItem.Name)
                                                               {
                                                                   ImageIndex = 2,
                                                                   //Tag = catalogItem,
@@ -69,8 +69,8 @@ namespace SSRSPublisher
                                                                   Tag = catalogItem.Type,
                                                               };
 
-                                DataSourceNode.SelectedImageIndex = DataSourceNode.ImageIndex;
-                                ParentNode.Nodes.Add(DataSourceNode);
+                                dataSourceNode.SelectedImageIndex = dataSourceNode.ImageIndex;
+                                ParentNode.Nodes.Add(dataSourceNode);
                             }
                             break;
                     }

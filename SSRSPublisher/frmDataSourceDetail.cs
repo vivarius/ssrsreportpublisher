@@ -33,6 +33,7 @@ namespace SSRSPublisher
         }
         #endregion
 
+        #region Events  
         private void btOK_Click(object sender, System.EventArgs e)
         {
             string dataSourceName = txNom.Text.Trim();
@@ -49,5 +50,6 @@ namespace SSRSPublisher
             SQLServer = sqlServer;
             DBName = dbName;
         }
+        #endregion
     }
 }

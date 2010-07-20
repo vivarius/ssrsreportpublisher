@@ -54,6 +54,8 @@ namespace SSRSPublisher
             this.pbTransfer = new System.Windows.Forms.ProgressBar();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -149,9 +151,11 @@ namespace SSRSPublisher
             this.creationDataSourceToolStripMenuItem,
             this.creationDossierToolStripMenuItem,
             this.downloadDossierToolStripMenuItem,
-            this.suppRapportDossierToolStripMenuItem});
+            this.suppRapportDossierToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.toolStripMenuItem1});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(182, 114);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(182, 142);
             // 
             // creationDataSourceToolStripMenuItem
             // 
@@ -164,21 +168,21 @@ namespace SSRSPublisher
             // creationDossierToolStripMenuItem
             // 
             this.creationDossierToolStripMenuItem.Name = "creationDossierToolStripMenuItem";
-            this.creationDossierToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.creationDossierToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.creationDossierToolStripMenuItem.Text = "Create Folder";
             this.creationDossierToolStripMenuItem.Click += new System.EventHandler(this.creationDossierToolStripMenuItem_Click);
             // 
             // downloadDossierToolStripMenuItem
             // 
             this.downloadDossierToolStripMenuItem.Name = "downloadDossierToolStripMenuItem";
-            this.downloadDossierToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.downloadDossierToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.downloadDossierToolStripMenuItem.Text = "Transfer...";
             this.downloadDossierToolStripMenuItem.Click += new System.EventHandler(this.downloadDossierToolStripMenuItem_Click);
             // 
             // suppRapportDossierToolStripMenuItem
             // 
             this.suppRapportDossierToolStripMenuItem.Name = "suppRapportDossierToolStripMenuItem";
-            this.suppRapportDossierToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.suppRapportDossierToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.suppRapportDossierToolStripMenuItem.Text = "Delete report / folder";
             this.suppRapportDossierToolStripMenuItem.Click += new System.EventHandler(this.suppRapportDossierToolStripMenuItem_Click);
             // 
@@ -255,6 +259,18 @@ namespace SSRSPublisher
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(178, 6);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(181, 22);
+            this.toolStripMenuItem1.Text = "Preview Report";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -307,6 +323,8 @@ namespace SSRSPublisher
         private ToolStripMenuItem suppRapportDossierToolStripMenuItem;
         private TextBox txItemPath;
         private OpenFileDialog openFileDialog1;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripMenuItem toolStripMenuItem1;
     }
 }
 
