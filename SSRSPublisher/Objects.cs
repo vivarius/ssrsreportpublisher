@@ -53,8 +53,6 @@ namespace SSRSPublisher
 
         }
 
-        //Add
-
         public List<Project> ListProjects
         {
             get { return _listProjects; }

@@ -30,7 +30,7 @@
         {
             this.panel1 = new System.Windows.Forms.Panel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.propertyGridServers = new System.Windows.Forms.PropertyGrid();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
@@ -51,18 +51,18 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.propertyGrid1);
+            this.splitContainer1.Panel1.Controls.Add(this.propertyGridServers);
             this.splitContainer1.Size = new System.Drawing.Size(430, 266);
             this.splitContainer1.SplitterDistance = 202;
             this.splitContainer1.TabIndex = 1;
             // 
-            // propertyGrid1
+            // propertyGridServers
             // 
-            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(202, 266);
-            this.propertyGrid1.TabIndex = 0;
+            this.propertyGridServers.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGridServers.Location = new System.Drawing.Point(0, 0);
+            this.propertyGridServers.Name = "propertyGridServers";
+            this.propertyGridServers.Size = new System.Drawing.Size(202, 266);
+            this.propertyGridServers.TabIndex = 0;
             // 
             // frmServers
             // 
@@ -83,7 +83,7 @@
 
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.PropertyGrid propertyGrid1;
+        private System.Windows.Forms.PropertyGrid propertyGridServers;
 
     }
 }

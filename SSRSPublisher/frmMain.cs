@@ -273,7 +273,11 @@ namespace SSRSPublisher
                         if (((ReportServerProperties)(treeView.Tag)).CreateFolder(treeView.SelectedNode.FullPath.Replace(treeView.Nodes[0].Text, string.Empty).Replace(@"\", "/"),
                                                                                   frmFolder.FolderName))
                         {
-                            treeView.SelectedNode.Nodes.Add(treeView.SelectedNode.FullPath + @"/" + frmFolder.FolderName, frmFolder.FolderName, 0);
+                            //treeView.SelectedNode.Nodes.Add(treeView.SelectedNode.FullPath + @"/" + frmFolder.FolderName, frmFolder.FolderName, 0);
+                            treeView.SelectedNode.Nodes.Add(new TreeNode(treeView.SelectedNode.FullPath + @"/" + frmFolder.FolderName, 0 , 0)
+                                                                {
+                                                                    Tag = ItemTypeEnum.Folder
+                                                                });
                             MessageBox.Show(@"Folder created succesfully");
                         }
                         else
@@ -339,13 +343,14 @@ namespace SSRSPublisher
         {
             TreeView treeView = (TreeView)((ContextMenuStrip)((ToolStripMenuItem)sender).Owner).SourceControl;
 
-            if ((ItemTypeEnum)(treeView.SelectedNode.Tag) == ItemTypeEnum.DataSource)
+            switch ((ItemTypeEnum)(treeView.SelectedNode.Tag))
             {
-                EditDataSource(sender);
-            }
-            if ((ItemTypeEnum)(treeView.SelectedNode.Tag) == ItemTypeEnum.Folder)
-            {
-                CreateDatasource(sender);
+                case ItemTypeEnum.DataSource:
+                    EditDataSource(sender);
+                    break;
+                case ItemTypeEnum.Folder:
+                    CreateDatasource(sender);
+                    break;
             }
         }
 
@@ -382,9 +387,7 @@ namespace SSRSPublisher
 
                 if (frmDataSourceDetail.ShowDialog() == DialogResult.OK)
                 {
-                    string folder =
-                        treeView.SelectedNode.FullPath.Replace(treeView.Nodes[0].Text, string.Empty).Replace(@"\", "/").
-                            Replace(treeView.SelectedNode.Text, string.Empty);
+                    string folder = treeView.SelectedNode.FullPath.Replace(treeView.Nodes[0].Text, string.Empty).Replace(@"\", "/").Replace(treeView.SelectedNode.Text, string.Empty);
                     ReportServerDestination.DeleteItem(ItemTypeEnum.DataSource, folder.Substring(0, folder.Length - 1), treeView.SelectedNode.Text);
                     MessageBox.Show(ReportServerDestination.CreateDataSource(frmDataSourceDetail.DataSourceName,
                                                                              folder.Substring(0, folder.Length - 1),
@@ -406,12 +409,28 @@ namespace SSRSPublisher
                 {
                     if (frmDataSourceDetail.ShowDialog() == DialogResult.OK)
                     {
-                        MessageBox.Show(ReportServerDestination.CreateDataSource(frmDataSourceDetail.DataSourceName,
-                                                                                 tvReportServerDestination.SelectedNode.FullPath.Replace(tvReportServerDestination.Nodes[0].Text, string.Empty).Replace(@"\", "/"),
+                        if (ReportServerDestination.CreateDataSource(frmDataSourceDetail.DataSourceName,
+                                                                                 treeView.SelectedNode.FullPath.Replace(treeView.Nodes[0].Text, string.Empty).Replace(@"\", "/"),
                                                                                  frmDataSourceDetail.SQLServer,
-                                                                                 frmDataSourceDetail.DBName)
-                                            ? "DataSource created succesfully"
-                                            : "DataSource WASN'T created");
+                                                                                 frmDataSourceDetail.DBName))
+                        {
+                            MessageBox.Show(@"DataSource created succesfully");
+                            treeView.SelectedNode.Nodes.Add(new TreeNode(treeView.SelectedNode.Text + @"/" + frmDataSourceDetail.DataSourceName, 1, 1)
+                                                                        {
+                                                                            Tag = ItemTypeEnum.DataSource
+                                                                        });
+                        }
+                        else
+                        {
+                            MessageBox.Show(@"DataSource WASN'T created");
+                        }
+
+                        //MessageBox.Show(ReportServerDestination.CreateDataSource(frmDataSourceDetail.DataSourceName,
+                        //                                                         tvReportServerDestination.SelectedNode.FullPath.Replace(tvReportServerDestination.Nodes[0].Text, string.Empty).Replace(@"\", "/"),
+                        //                                                         frmDataSourceDetail.SQLServer,
+                        //                                                         frmDataSourceDetail.DBName)
+                        //                    ? "DataSource created succesfully"
+                        //                    : "DataSource WASN'T created");
                     }
                 }
             }

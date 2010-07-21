@@ -45,6 +45,8 @@ namespace SSRSPublisher
             this.creationDossierToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.downloadDossierToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.suppRapportDossierToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.panel2 = new System.Windows.Forms.Panel();
             this.txItemPath = new System.Windows.Forms.TextBox();
@@ -54,8 +56,6 @@ namespace SSRSPublisher
             this.pbTransfer = new System.Windows.Forms.ProgressBar();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -133,14 +133,18 @@ namespace SSRSPublisher
             // 
             // tvReportServerSource
             // 
+            this.tvReportServerSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tvReportServerSource.CheckBoxes = true;
             this.tvReportServerSource.ContextMenuStrip = this.contextMenuStrip1;
             this.tvReportServerSource.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.tvReportServerSource.FullRowSelect = true;
+            this.tvReportServerSource.HotTracking = true;
             this.tvReportServerSource.ImageIndex = 0;
             this.tvReportServerSource.ImageList = this.imageList1;
             this.tvReportServerSource.Location = new System.Drawing.Point(0, 53);
             this.tvReportServerSource.Name = "tvReportServerSource";
             this.tvReportServerSource.SelectedImageIndex = 0;
+            this.tvReportServerSource.ShowNodeToolTips = true;
             this.tvReportServerSource.Size = new System.Drawing.Size(440, 535);
             this.tvReportServerSource.TabIndex = 3;
             this.tvReportServerSource.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.tvReportServerSource_NodeMouseClick);
@@ -186,6 +190,18 @@ namespace SSRSPublisher
             this.suppRapportDossierToolStripMenuItem.Text = "Delete report / folder";
             this.suppRapportDossierToolStripMenuItem.Click += new System.EventHandler(this.suppRapportDossierToolStripMenuItem_Click);
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(178, 6);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(181, 22);
+            this.toolStripMenuItem1.Text = "Preview Report";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+            // 
             // imageList1
             // 
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
@@ -216,13 +232,17 @@ namespace SSRSPublisher
             // 
             // tvReportServerDestination
             // 
+            this.tvReportServerDestination.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tvReportServerDestination.ContextMenuStrip = this.contextMenuStrip1;
             this.tvReportServerDestination.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.tvReportServerDestination.FullRowSelect = true;
+            this.tvReportServerDestination.HotTracking = true;
             this.tvReportServerDestination.ImageIndex = 0;
             this.tvReportServerDestination.ImageList = this.imageList1;
             this.tvReportServerDestination.Location = new System.Drawing.Point(0, 53);
             this.tvReportServerDestination.Name = "tvReportServerDestination";
             this.tvReportServerDestination.SelectedImageIndex = 0;
+            this.tvReportServerDestination.ShowNodeToolTips = true;
             this.tvReportServerDestination.Size = new System.Drawing.Size(434, 535);
             this.tvReportServerDestination.TabIndex = 4;
             this.tvReportServerDestination.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.tvReportServerDestination_NodeMouseClick);
@@ -259,23 +279,11 @@ namespace SSRSPublisher
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(178, 6);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(181, 22);
-            this.toolStripMenuItem1.Text = "Preview Report";
-            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
-            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(884, 655);
+            this.ClientSize = new System.Drawing.Size(884, 660);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.pbTransfer);

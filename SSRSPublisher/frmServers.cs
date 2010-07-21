@@ -11,11 +11,12 @@ namespace SSRSPublisher
 {
     public partial class frmServers : Form
     {
+        public List<Project> ListProjects { get; set; }
+
         public frmServers()
         {
             InitializeComponent();
-            
-            
+            propertyGridServers.SelectedObject = ListProjects;
         }
     }
 }
