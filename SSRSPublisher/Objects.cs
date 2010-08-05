@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml;
 
@@ -13,11 +14,13 @@ namespace SSRSPublisher
 
     public class Project
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string Server1 { get; set; }
         public string Server2 { get; set; }
         public string URL1 { get; set; }
         public string URL2 { get; set; }
+        public string ReportPath1 { get; set; }
+        public string ReportPath2 { get; set; }
 
     }
 
@@ -30,7 +33,7 @@ namespace SSRSPublisher
         {
             try
             {
-                _doc.Load("settings.xml");
+                _doc.Load(Directory.GetCurrentDirectory() + "/settings.xml");
 
                 XmlNodeList projectsList = _doc.GetElementsByTagName("Project");
 
@@ -38,11 +41,13 @@ namespace SSRSPublisher
                 {
                     _listProjects.Add(new Project
                                           {
-                                              Id = Convert.ToInt32(projectElement.Attributes["ItemNo"].InnerText),
+                                              Id = projectElement.Attributes["ItemNo"].InnerText,
                                               Server1 = projectElement.GetElementsByTagName("srvsql1")[0].Attributes["Name"].InnerText,
                                               Server2 = projectElement.GetElementsByTagName("srvsql2")[0].Attributes["Name"].InnerText,
                                               URL1 = projectElement.GetElementsByTagName("srvsql1")[0].Attributes["URL"].InnerText,
-                                              URL2 = projectElement.GetElementsByTagName("srvsql2")[0].Attributes["URL"].InnerText
+                                              URL2 = projectElement.GetElementsByTagName("srvsql2")[0].Attributes["URL"].InnerText,
+                                              ReportPath1 = projectElement.GetElementsByTagName("srvsql1")[0].Attributes["ReportPath"].InnerText,
+                                              ReportPath2 = projectElement.GetElementsByTagName("srvsql2")[0].Attributes["ReportPath"].InnerText
                                           });
                 }
             }
