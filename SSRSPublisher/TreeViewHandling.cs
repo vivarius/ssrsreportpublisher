@@ -45,8 +45,8 @@ namespace SSRSPublisher
                             ParentNode.Nodes.Add(FillTreeView(catalogItem.Path, folderNode, reportingService2005, showDataSource));
                             break;
                         case ItemTypeEnum.Report:
-                            //if (showDataSource)
-                            //    break;
+                            if (showDataSource)
+                                break;
                             TreeNode reportNode = new TreeNode(catalogItem.Name)
                             {
                                 ImageIndex = 1,
@@ -59,19 +59,19 @@ namespace SSRSPublisher
                             ParentNode.Nodes.Add(reportNode);
                             break;
                         case ItemTypeEnum.DataSource:
-                            if (showDataSource)
-                            {
-                                TreeNode dataSourceNode = new TreeNode(catalogItem.Name)
-                                                              {
-                                                                  ImageIndex = 2,
-                                                                  //Tag = catalogItem,
-                                                                  Name = catalogItem.Path,
-                                                                  Tag = catalogItem.Type,
-                                                              };
+                            //if (showDataSource)
+                            //{
+                            TreeNode dataSourceNode = new TreeNode(catalogItem.Name)
+                                                          {
+                                                              ImageIndex = 2,
+                                                              //Tag = catalogItem,
+                                                              Name = catalogItem.Path,
+                                                              Tag = catalogItem.Type,
+                                                          };
 
-                                dataSourceNode.SelectedImageIndex = dataSourceNode.ImageIndex;
-                                ParentNode.Nodes.Add(dataSourceNode);
-                            }
+                            dataSourceNode.SelectedImageIndex = dataSourceNode.ImageIndex;
+                            ParentNode.Nodes.Add(dataSourceNode);
+                            //}
                             break;
                     }
                 }

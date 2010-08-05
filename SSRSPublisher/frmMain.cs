@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -28,8 +28,15 @@ namespace SSRSPublisher
 
         #region Events
 
+        private void btSettings_Click(object sender, EventArgs e)
+        {
+            new frmServers().ShowDialog();
+            LoadProjectList();
+        }
+
         void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
+            lblBWInfo.Visible = true;
             lblBWInfo.Text = (e.ProgressPercentage + "%");
         }
 
@@ -51,67 +58,12 @@ namespace SSRSPublisher
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            if (tvReportServerDestination.SelectedNode == null)
-            {
-                MessageBox.Show(@"Merci de sélectionner le dossier destination");
-                return;
-            }
-
-            FileNameAndPath dataSourceMap = null;
-            using (var frmDataSource = new frmDataSource())
-            {
-                frmDataSource.FillTreeview(ReportServerDestination.ReportsServerInstance);
-                if (frmDataSource.ShowDialog() == DialogResult.OK)
-                    dataSourceMap = frmDataSource.SelectedNode;
-            }
-
-            Cursor.Current = Cursors.WaitCursor;
-            if (dataSourceMap == null)
-                return;
-
-            var checkedNodes = TreeViewHandling.GetCheckedNodes(tvReportServerSource.Nodes);
-
-            pbTransfer.Visible = true;
-            pbTransfer.Maximum = checkedNodes.Count(node => node.Checked);
-
-            int i = 0;
-
-            foreach (TreeNode checkedNode in checkedNodes.Where(node => node.Checked))
-            {
-                switch (((ItemTypeEnum)(checkedNode.Tag)))
-                {
-                    case ItemTypeEnum.Report:
-                        pbTransfer.Value = (i < pbTransfer.Maximum) ? ++i : i;
-                        ReportServerDestination.DeployReport(ReportServerSource.ReportsServerInstance,
-                                                             checkedNode.Text,
-                                                             checkedNode.FullPath.Replace(tvReportServerSource.Nodes[0].Text, string.Empty),
-                                                             tvReportServerDestination.SelectedNode.FullPath.Replace(tvReportServerDestination.Nodes[0].Text, string.Empty),
-                                                             dataSourceMap.Name,
-                                                             dataSourceMap.Path);
-                        break;
-                    case ItemTypeEnum.Folder:
-                        if (ReportServerDestination.CheckItemExist(ItemTypeEnum.Folder,
-                                                                   tvReportServerDestination.SelectedNode.FullPath.Replace(tvReportServerDestination.Nodes[0].Text, string.Empty).Replace(@"\", "/"),
-                                                                   checkedNode.Text))
-                        {
-                            ReportServerDestination.CreateFolder(tvReportServerDestination.SelectedNode.FullPath.Replace(tvReportServerDestination.Nodes[0].Text, string.Empty), checkedNode.Text);
-                        }
-                        break;
-                }
-            }
-
-            pbTransfer.Visible = false;
-            Cursor.Current = Cursors.Arrow;
+            TransferItems();
         }
 
         private void ReportServer_Load(object sender, EventArgs e)
         {
-            var list = new Projects().ListProjects;
-
-            foreach (var project in list)
-                cmbProject.Items.Add(project.Server1 + " = " + project.Server2);
-
-            cmbProject.Tag = list;
+            LoadProjectList();
         }
 
         private void frmMain_Resize(object sender, EventArgs e)
@@ -164,19 +116,153 @@ namespace SSRSPublisher
             PreviewReport((TreeView)((ContextMenuStrip)((ToolStripMenuItem)sender).Owner).SourceControl);
         }
 
-       
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            DownloadReport((TreeView)((ContextMenuStrip)((ToolStripMenuItem)sender).Owner).SourceControl);
+        }
+
+        private void DownloadReport(TreeView treeView)
+        {
+            if ((ItemTypeEnum)treeView.SelectedNode.Tag != ItemTypeEnum.Report)
+                return;
+
+            try
+            {
+                byte[] reportContent = ((ReportServerProperties)(treeView.Tag)).ReportsServerInstance.GetReportDefinition(
+                                treeView.SelectedNode.FullPath.Replace(treeView.Nodes[0].Text, string.Empty).Replace(@"\", "/"));
+
+                if (reportContent == null)
+                {
+                    MessageBox.Show(@"Cannot obtain the report content");
+                    return;
+                }
+
+                if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    File.WriteAllBytes(saveFileDialog1.FileName, reportContent);
+                }
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message);
+            }
+        }
 
         #endregion
 
         #region Methods
 
+        private void LoadProjectList()
+        {
+            try
+            {
+                var list = new Projects().ListProjects;
+
+                cmbProject.Items.Clear();
+
+                foreach (var project in list)
+                    cmbProject.Items.Add(project.Server1 + " = " + project.Server2);
+
+                cmbProject.Tag = list;
+            }
+            catch (Exception exception)
+            {
+
+                MessageBox.Show(exception.Message);
+            }
+
+        }
+
+        private void TransferItems()
+        {
+            if (tvReportServerDestination.SelectedNode == null)
+            {
+                MessageBox.Show(@"Merci de sélectionner le dossier destination");
+                return;
+            }
+
+            FileNameAndPath dataSourceMap = null;
+            using (var frmDataSource = new frmDataSource())
+            {
+                frmDataSource.FillTreeview(ReportServerDestination.ReportsServerInstance);
+                if (frmDataSource.ShowDialog() == DialogResult.OK)
+                    dataSourceMap = frmDataSource.SelectedNode;
+            }
+
+            Cursor.Current = Cursors.WaitCursor;
+            if (dataSourceMap == null)
+                return;
+
+            try
+            {
+                var checkedNodes = TreeViewHandling.GetCheckedNodes(tvReportServerSource.Nodes);
+
+                pbTransfer.Visible = true;
+                pbTransfer.Maximum = checkedNodes.Count(node => node.Checked);
+
+                int i = 0;
+
+                foreach (TreeNode checkedNode in checkedNodes.Where(node => node.Checked))
+                {
+                    try
+                    {
+                        switch (((ItemTypeEnum)(checkedNode.Tag)))
+                        {
+                            case ItemTypeEnum.Report:
+                                pbTransfer.Value = (i < pbTransfer.Maximum) ? ++i : i;
+                                ReportServerDestination.DeployReport(ReportServerSource.ReportsServerInstance,
+                                                                     checkedNode.Text,
+                                                                     checkedNode.FullPath.Replace(tvReportServerSource.Nodes[0].Text, string.Empty),
+                                                                     tvReportServerDestination.SelectedNode.FullPath.Replace(tvReportServerDestination.Nodes[0].Text, string.Empty),
+                                                                     dataSourceMap.Name,
+                                                                     dataSourceMap.Path);
+                                tvReportServerDestination.SelectedNode.Nodes.Add(new TreeNode(checkedNode.Text, 1, 1)
+                                {
+                                    Tag = checkedNode.Tag
+                                });
+                                break;
+                            case ItemTypeEnum.Folder:
+                                if (ReportServerDestination.CheckItemExist(ItemTypeEnum.Folder,
+                                                                           tvReportServerDestination.SelectedNode.FullPath.Replace(tvReportServerDestination.Nodes[0].Text, string.Empty).Replace(@"\", "/"),
+                                                                           checkedNode.Text))
+                                {
+                                    ReportServerDestination.CreateFolder(tvReportServerDestination.SelectedNode.FullPath.Replace(tvReportServerDestination.Nodes[0].Text, string.Empty), checkedNode.Text);
+                                    tvReportServerDestination.SelectedNode.Nodes.Add(new TreeNode(checkedNode.Text, 0, 0)
+                                    {
+                                        Tag = checkedNode.Tag
+                                    });
+                                }
+                                break;
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        MessageBox.Show(exception.Message);
+                    }
+                }
+
+                tvReportServerDestination.SelectedNode.Expand();
+
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message);
+            }
+
+
+            pbTransfer.Visible = false;
+            Cursor.Current = Cursors.Arrow;
+        }
+
         private void PreviewReport(TreeView treeView)
         {
-            if ((ItemTypeEnum) (treeView.SelectedNode.Tag) != ItemTypeEnum.Report) return;
+            if ((ItemTypeEnum)(treeView.SelectedNode.Tag) != ItemTypeEnum.Report)
+                return;
 
             using (var frmReportViewer = new frmReportViewer())
             {
-                //frmReportViewer.FillTreeview(ReportServerDestination.ReportsServerInstance);
+
+                frmReportViewer.SourceNode = treeView.SelectedNode;
                 frmReportViewer.ShowDialog();
             }
         }
@@ -189,30 +275,21 @@ namespace SSRSPublisher
             {
                 var cmbBoxValue = new string[] { };
                 var tagValue = new List<Project>();
-                var selectedProject = new Project();
+
                 if (cmbProject.InvokeRequired)
                 {
                     cmbProject.Invoke(new MethodInvoker(delegate
-                                                            {
-                                                                cmbBoxValue = ((string)cmbProject.SelectedItem).Split('=');
-                                                            }));
+                    {
+                        cmbBoxValue = ((string)cmbProject.SelectedItem).Split('=');
+                    }));
                     cmbProject.Invoke(new MethodInvoker(delegate
-                                                            {
-                                                                tagValue = cmbProject.Tag as List<Project>;
-                                                            }));
+                    {
+                        tagValue = cmbProject.Tag as List<Project>;
+                    }));
                 }
 
-                foreach (var project in tagValue.Where(project => project.Server1 == cmbBoxValue[0].Trim() &&
-                                                                  project.Server2 == cmbBoxValue[1].Trim()))
-                {
-                    selectedProject = project;
-                    break;
-                }
-
-                //var selectedProject = (from tv in tagValue
-                //                             where tv.Server1 == cmbBoxValue[0].Trim() &&
-                //                                   tv.Server2 == cmbBoxValue[1].Trim()
-                //                             select tv) as List<Project>;
+                var selectedProject = tagValue.Where(project => project.Server1 == cmbBoxValue[0].Trim() &&
+                                                                project.Server2 == cmbBoxValue[1].Trim()).FirstOrDefault();
 
                 if (selectedProject != null)
                 {
@@ -236,7 +313,7 @@ namespace SSRSPublisher
             {
                 treeView.Invoke(new MethodInvoker(treeView.BeginUpdate));
                 treeView.Invoke(new MethodInvoker(() => treeView.Nodes.Clear()));
-                treeView.Invoke(new MethodInvoker(() => treeView.Nodes.Add(TreeViewHandling.GetFolderAsNodes(reportingService2005.ReportsServerInstance, true))));
+                treeView.Invoke(new MethodInvoker(() => treeView.Nodes.Add(TreeViewHandling.GetFolderAsNodes(reportingService2005.ReportsServerInstance))));
                 treeView.Invoke(new MethodInvoker(treeView.EndUpdate));
                 treeView.Tag = reportingService2005;
             }
@@ -244,7 +321,7 @@ namespace SSRSPublisher
             {
                 treeView.BeginUpdate();
                 treeView.Nodes.Clear();
-                treeView.Nodes.Add(TreeViewHandling.GetFolderAsNodes(reportingService2005.ReportsServerInstance, true));
+                treeView.Nodes.Add(TreeViewHandling.GetFolderAsNodes(reportingService2005.ReportsServerInstance));
                 treeView.EndUpdate();
                 treeView.Tag = reportingService2005;
             }
@@ -252,105 +329,149 @@ namespace SSRSPublisher
 
         private static void DeleteItem(TreeView treeView)
         {
-            if (!treeView.SelectedNode.TreeView.HasChildren)
-                if (((ReportServerProperties)(treeView.Tag)).DeleteItem((ItemTypeEnum)(treeView.SelectedNode.Tag),
-                                                                     treeView.SelectedNode.FullPath.Replace(treeView.Nodes[0].Text, string.Empty).Replace(treeView.SelectedNode.Text, string.Empty),
-                                                                     treeView.SelectedNode.Text))
-                {
-                    treeView.Nodes.Remove(treeView.SelectedNode);
-                }
+            try
+            {
+                if (!treeView.SelectedNode.TreeView.HasChildren)
+                    if (((ReportServerProperties)(treeView.Tag)).DeleteItem((ItemTypeEnum)(treeView.SelectedNode.Tag),
+                                                                         treeView.SelectedNode.FullPath.Replace(treeView.Nodes[0].Text, string.Empty).Replace(treeView.SelectedNode.Text, string.Empty),
+                                                                         treeView.SelectedNode.Text))
+                    {
+                        treeView.Nodes.Remove(treeView.SelectedNode);
+                    }
+                    else
+                    {
+                        MessageBox.Show("The selected item cannot be deleted");
+                    }
+            }
+            catch (Exception exception)
+            {
+
+                MessageBox.Show(exception.Message);
+            }
+
         }
 
         private void CreateFolder(object sender)
         {
-            var treeView = (TreeView)((ContextMenuStrip)((ToolStripMenuItem)sender).Owner).SourceControl;
-            if ((ItemTypeEnum)(treeView.SelectedNode.Tag) == ItemTypeEnum.Folder)
+
+            try
             {
-                using (var frmFolder = new frmFolder())
+                var treeView = (TreeView)((ContextMenuStrip)((ToolStripMenuItem)sender).Owner).SourceControl;
+                if ((ItemTypeEnum)(treeView.SelectedNode.Tag) == ItemTypeEnum.Folder)
                 {
-                    if (frmFolder.ShowDialog() == DialogResult.OK)
+                    using (var frmFolder = new frmFolder())
                     {
-                        if (((ReportServerProperties)(treeView.Tag)).CreateFolder(treeView.SelectedNode.FullPath.Replace(treeView.Nodes[0].Text, string.Empty).Replace(@"\", "/"),
-                                                                                  frmFolder.FolderName))
+                        if (frmFolder.ShowDialog() == DialogResult.OK)
                         {
-                            //treeView.SelectedNode.Nodes.Add(treeView.SelectedNode.FullPath + @"/" + frmFolder.FolderName, frmFolder.FolderName, 0);
-                            treeView.SelectedNode.Nodes.Add(new TreeNode(treeView.SelectedNode.FullPath + @"/" + frmFolder.FolderName, 0 , 0)
-                                                                {
-                                                                    Tag = ItemTypeEnum.Folder
-                                                                });
-                            MessageBox.Show(@"Folder created succesfully");
-                        }
-                        else
-                        {
-                            MessageBox.Show(@"Folder NOT created");
+                            if (((ReportServerProperties)(treeView.Tag)).CreateFolder(treeView.SelectedNode.FullPath.Replace(treeView.Nodes[0].Text, string.Empty).Replace(@"\", "/"),
+                                                                                      frmFolder.FolderName))
+                            {
+                                treeView.SelectedNode.Nodes.Add(new TreeNode(frmFolder.FolderName, 0, 0)
+                                                                                                            {
+                                                                                                                Tag = ItemTypeEnum.Folder
+                                                                                                            });
+                                treeView.SelectedNode.Expand();
+                                MessageBox.Show(@"Folder created succesfully");
+                            }
+                            else
+                            {
+                                MessageBox.Show(@"Folder NOT created");
+                            }
                         }
                     }
                 }
+                else
+                    MessageBox.Show(@"Please choose a folder");
             }
-            else
-                MessageBox.Show(@"Please choose a folder");
+            catch (Exception exception)
+            {
+
+                MessageBox.Show(exception.Message);
+            }
         }
 
         private void UploadReport(object sender)
         {
             var treeView = (TreeView)((ContextMenuStrip)((ToolStripMenuItem)sender).Owner).SourceControl;
-            if ((ItemTypeEnum)(treeView.SelectedNode.Tag) == ItemTypeEnum.Folder)
+
+            try
             {
-                FileNameAndPath dataSourceMap = null;
-                using (var frmDataSource = new frmDataSource())
+                if ((ItemTypeEnum)(treeView.SelectedNode.Tag) == ItemTypeEnum.Folder)
                 {
-                    frmDataSource.FillTreeview(ReportServerDestination.ReportsServerInstance);
-                    if (frmDataSource.ShowDialog() == DialogResult.OK)
-                        dataSourceMap = frmDataSource.SelectedNode;
-                }
-
-                openFileDialog1.Filter = @"*.*|*.*";
-                openFileDialog1.InitialDirectory = @"c:\";
-                openFileDialog1.Multiselect = false;
-                openFileDialog1.ShowDialog();
-                if (File.Exists(openFileDialog1.FileName))
-                {
-                    if (((ReportServerProperties)(treeView.Tag)).DeployReport(
-                            ((ReportServerProperties)(treeView.Tag)).ReportsServerInstance,
-                            openFileDialog1.FileName,
-                            txItemPath.Text,
-                            dataSourceMap.Name,
-                            dataSourceMap.Path))
+                    FileNameAndPath dataSourceMap = null;
+                    using (var frmDataSource = new frmDataSource())
                     {
-                        var ReportNode = new TreeNode(openFileDialog1.FileName)
-                                             {
-                                                 ImageIndex = 1,
-                                                 Tag = openFileDialog1.FileName,
-                                                 Name = openFileDialog1.FileName,
-                                                 SelectedImageIndex = 1
-                                             };
+                        frmDataSource.FillTreeview(ReportServerDestination.ReportsServerInstance);
+                        if (frmDataSource.ShowDialog() == DialogResult.OK)
+                            dataSourceMap = frmDataSource.SelectedNode;
+                    }
 
-                        treeView.SelectedNode.Nodes.Add(ReportNode);
+                    openFileDialog1.Filter = @"*.*|*.*";
+                    openFileDialog1.InitialDirectory = @"c:\";
+                    openFileDialog1.Multiselect = false;
+                    openFileDialog1.ShowDialog();
+                    if (File.Exists(openFileDialog1.FileName))
+                    {
+                        if (dataSourceMap != null)
+                            if (((ReportServerProperties)(treeView.Tag)).DeployReport(((ReportServerProperties)(treeView.Tag)).ReportsServerInstance,
+                                                                                      openFileDialog1.FileName,
+                                                                                      treeView.SelectedNode.FullPath.Replace(treeView.Nodes[0].Text, string.Empty).Replace(@"\", @"/"),
+                                                                                      dataSourceMap.Name,
+                                                                                      dataSourceMap.Path))
+                            {
+
+                                FileInfo fileInfo = new FileInfo(openFileDialog1.FileName);
+
+                                string fileName = fileInfo.Name.Replace(fileInfo.Extension, string.Empty);
+
+                                var reportNode = new TreeNode(fileName)
+                                                     {
+                                                         ImageIndex = 1,
+                                                         Tag = ItemTypeEnum.Report,
+                                                         Name = fileName,
+                                                         SelectedImageIndex = 1
+                                                     };
+
+                                treeView.SelectedNode.Nodes.Add(reportNode);
+                                treeView.SelectedNode.Expand();
+                            }
+                            else
+                                MessageBox.Show(@"The Report wasn't deployed");
                     }
                     else
-                        MessageBox.Show(@"The Report wasn't deployed");
+                    {
+                        MessageBox.Show(@"Please choose a file");
+                    }
                 }
                 else
-                {
-                    MessageBox.Show(@"Please choose a file");
-                }
+                    MessageBox.Show(@"Please choose a folder");
             }
-            else
-                MessageBox.Show(@"Please choose a folder");
+            catch (Exception exception)
+            {
+
+                MessageBox.Show(exception.Message);
+            }
+
         }
 
         private void HandleDatasource(object sender)
         {
             TreeView treeView = (TreeView)((ContextMenuStrip)((ToolStripMenuItem)sender).Owner).SourceControl;
-
-            switch ((ItemTypeEnum)(treeView.SelectedNode.Tag))
+            try
             {
-                case ItemTypeEnum.DataSource:
-                    EditDataSource(sender);
-                    break;
-                case ItemTypeEnum.Folder:
-                    CreateDatasource(sender);
-                    break;
+                switch ((ItemTypeEnum)(treeView.SelectedNode.Tag))
+                {
+                    case ItemTypeEnum.DataSource:
+                        EditDataSource(sender);
+                        break;
+                    case ItemTypeEnum.Folder:
+                        CreateDatasource(sender);
+                        break;
+                }
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message);
             }
         }
 
@@ -365,9 +486,6 @@ namespace SSRSPublisher
             }
 
             ReportServerProperties reportServerProperties = new ReportServerProperties(((ReportServerProperties)(treeView.Tag)).ReportsServerInstance.Url);
-            //DataSource dataSource = reportServerProperties.GetDataSource(
-            //    treeView.SelectedNode.FullPath.Replace(treeView.Nodes[0].Text, string.Empty).Replace(@"\", "/"),
-            //    treeView.SelectedNode.Text);
 
             DataSourceDefinition dataSourceDefinition = reportServerProperties.GetDataSourceDefinition(treeView.SelectedNode.FullPath.Replace(treeView.Nodes[0].Text, string.Empty).Replace(@"\", "/"));
 
@@ -388,93 +506,207 @@ namespace SSRSPublisher
                 if (frmDataSourceDetail.ShowDialog() == DialogResult.OK)
                 {
                     string folder = treeView.SelectedNode.FullPath.Replace(treeView.Nodes[0].Text, string.Empty).Replace(@"\", "/").Replace(treeView.SelectedNode.Text, string.Empty);
-                    ReportServerDestination.DeleteItem(ItemTypeEnum.DataSource, folder.Substring(0, folder.Length - 1), treeView.SelectedNode.Text);
-                    MessageBox.Show(ReportServerDestination.CreateDataSource(frmDataSourceDetail.DataSourceName,
-                                                                             folder.Substring(0, folder.Length - 1),
-                                                                             frmDataSourceDetail.SQLServer,
-                                                                             frmDataSourceDetail.DBName)
-                                        ? "DataSource modified succesfully"
-                                        : "DataSource WASN'T modified");
+                    if (ReportServerDestination.DeleteItem(ItemTypeEnum.DataSource, folder.Substring(0, folder.Length - 1), treeView.SelectedNode.Text) &&
+                        ReportServerDestination.CreateDataSource(frmDataSourceDetail.DataSourceName, folder.Substring(0, folder.Length - 1), frmDataSourceDetail.SQLServer, frmDataSourceDetail.DBName))
+                    {
+                        treeView.SelectedNode.Text = frmDataSourceDetail.DataSourceName;
+                        MessageBox.Show("DataSource modified succesfully");
+                    }
+                    else
+                    {
+                        MessageBox.Show("DataSource WASN'T modified");
+                    }
                 }
             }
         }
 
         private void CreateDatasource(object sender)
         {
-            TreeView treeView = (TreeView)((ContextMenuStrip)((ToolStripMenuItem)sender).Owner).SourceControl;
-
-            if ((ItemTypeEnum)(treeView.SelectedNode.Tag) == ItemTypeEnum.Folder)
+            try
             {
-                using (var frmDataSourceDetail = new frmDataSourceDetail())
-                {
-                    if (frmDataSourceDetail.ShowDialog() == DialogResult.OK)
-                    {
-                        if (ReportServerDestination.CreateDataSource(frmDataSourceDetail.DataSourceName,
-                                                                                 treeView.SelectedNode.FullPath.Replace(treeView.Nodes[0].Text, string.Empty).Replace(@"\", "/"),
-                                                                                 frmDataSourceDetail.SQLServer,
-                                                                                 frmDataSourceDetail.DBName))
-                        {
-                            MessageBox.Show(@"DataSource created succesfully");
-                            treeView.SelectedNode.Nodes.Add(new TreeNode(treeView.SelectedNode.Text + @"/" + frmDataSourceDetail.DataSourceName, 1, 1)
-                                                                        {
-                                                                            Tag = ItemTypeEnum.DataSource
-                                                                        });
-                        }
-                        else
-                        {
-                            MessageBox.Show(@"DataSource WASN'T created");
-                        }
+                TreeView treeView = (TreeView)((ContextMenuStrip)((ToolStripMenuItem)sender).Owner).SourceControl;
 
-                        //MessageBox.Show(ReportServerDestination.CreateDataSource(frmDataSourceDetail.DataSourceName,
-                        //                                                         tvReportServerDestination.SelectedNode.FullPath.Replace(tvReportServerDestination.Nodes[0].Text, string.Empty).Replace(@"\", "/"),
-                        //                                                         frmDataSourceDetail.SQLServer,
-                        //                                                         frmDataSourceDetail.DBName)
-                        //                    ? "DataSource created succesfully"
-                        //                    : "DataSource WASN'T created");
+                if ((ItemTypeEnum)(treeView.SelectedNode.Tag) == ItemTypeEnum.Folder)
+                {
+                    using (var frmDataSourceDetail = new frmDataSourceDetail())
+                    {
+                        if (frmDataSourceDetail.ShowDialog() == DialogResult.OK)
+                        {
+                            if (ReportServerDestination.CreateDataSource(frmDataSourceDetail.DataSourceName,
+                                                                                     treeView.SelectedNode.FullPath.Replace(treeView.Nodes[0].Text, string.Empty).Replace(@"\", "/"),
+                                                                                     frmDataSourceDetail.SQLServer,
+                                                                                     frmDataSourceDetail.DBName))
+                            {
+                                MessageBox.Show(@"DataSource created succesfully");
+                                treeView.SelectedNode.Nodes.Add(new TreeNode(treeView.SelectedNode.Text + @"/" + frmDataSourceDetail.DataSourceName, 1, 1)
+                                {
+                                    Tag = ItemTypeEnum.DataSource
+                                });
+                                treeView.SelectedNode.Expand();
+                            }
+                            else
+                            {
+                                MessageBox.Show(@"DataSource WASN'T created");
+                            }
+                        }
                     }
                 }
+                else
+                    MessageBox.Show(@"Please choose a folder");
             }
-            else
-                MessageBox.Show(@"Please choose a folder");
+            catch (Exception exception)
+            {
+
+                MessageBox.Show(exception.Message);
+            }
         }
+
+        private bool TransferReportNode(TreeNode checkedNode, TreeNode destinationNode)
+        {
+            try
+            {
+                FileNameAndPath dataSourceMap = null;
+                using (var frmDataSource = new frmDataSource())
+                {
+                    frmDataSource.FillTreeview(ReportServerDestination.ReportsServerInstance);
+                    if (frmDataSource.ShowDialog() == DialogResult.OK)
+                        dataSourceMap = frmDataSource.SelectedNode;
+                }
+
+                Cursor.Current = Cursors.WaitCursor;
+                if (dataSourceMap == null)
+                {
+                    Cursor.Current = Cursors.Default;
+                    return false;
+                }
+
+                ((ReportServerProperties)checkedNode.TreeView.Tag).DeployReport(((ReportServerProperties)checkedNode.TreeView.Tag).ReportsServerInstance,
+                                                                                checkedNode.Text,
+                                                                                checkedNode.FullPath.Replace(checkedNode.TreeView.Nodes[0].Text, string.Empty),
+                                                                                destinationNode.FullPath.Replace(destinationNode.TreeView.Nodes[0].Text, string.Empty),
+                                                                                dataSourceMap.Name,
+                                                                                dataSourceMap.Path);
+
+                destinationNode.Nodes.Add(new TreeNode(checkedNode.Text, 1, 1)
+                {
+                    Tag = checkedNode.Tag
+                });
+                return true;
+            }
+            catch (Exception exception)
+            {
+
+                MessageBox.Show(exception.Message);
+            }
+            return false;
+        }
+
         #endregion
 
+        #region TreeView Drag & Drop
 
+        private void tvReportServerSource_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Copy;
+        }
+
+        private void tvReportServerSource_DragDrop(object sender, DragEventArgs e)
+        {
+
+            if (!e.Data.GetDataPresent("System.Windows.Forms.TreeNode", false)) return;
+
+            Point point = ((TreeView)sender).PointToClient(new Point(e.X, e.Y));
+            TreeNode destinationNode = ((TreeView)sender).GetNodeAt(point);
+
+            TreeNode newNode = (TreeNode)e.Data.GetData("System.Windows.Forms.TreeNode");
+
+            if (destinationNode != null && (ItemTypeEnum)destinationNode.Tag == ItemTypeEnum.Folder)
+            {
+                //destinationNode.Nodes.Add((TreeNode)newNode.Clone());
+                TransferDragAndDrop(newNode, destinationNode);
+                destinationNode.Expand();
+            }
+            else
+            {
+                MessageBox.Show("The destination node must be a folder!");
+            }
+        }
+
+        private void tvReportServerSource_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            DoDragDrop(e.Item, DragDropEffects.Copy);
+        }
+
+        private void tvReportServerDestination_GiveFeedback(object sender, GiveFeedbackEventArgs e)
+        {
+            e.UseDefaultCursors = false;
+            Cursor.Current = Cursors.WaitCursor;
+        }
+
+        private void tvReportServerDestination_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Copy;
+        }
+
+        private void tvReportServerDestination_DragDrop(object sender, DragEventArgs e)
+        {
+            if (!e.Data.GetDataPresent("System.Windows.Forms.TreeNode", false)) return;
+
+            Point point = ((TreeView)sender).PointToClient(new Point(e.X, e.Y));
+            TreeNode destinationNode = ((TreeView)sender).GetNodeAt(point);
+
+            TreeNode newNode = (TreeNode)e.Data.GetData("System.Windows.Forms.TreeNode");
+
+            if (destinationNode != null && (ItemTypeEnum)destinationNode.Tag == ItemTypeEnum.Folder)
+            {
+                //destinationNode.Nodes.Add((TreeNode)newNode.Clone());
+                TransferDragAndDrop(newNode, destinationNode);
+                destinationNode.Expand();
+            }
+            else
+            {
+                MessageBox.Show("The destination node must be a folder!");
+            }
+        }
+
+        private void tvReportServerDestination_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            DoDragDrop(e.Item, DragDropEffects.Copy);
+        }
+
+        public bool TransferDragAndDrop(TreeNode checkedNode, TreeNode destinationNode)
+        {
+            try
+            {
+                switch (((ItemTypeEnum)(checkedNode.Tag)))
+                {
+                    case ItemTypeEnum.Report:
+                        if (!TransferReportNode(checkedNode, destinationNode))
+                        {
+                            Cursor.Current = Cursors.Default;
+                            return false;
+                        }
+
+                        break;
+                    case ItemTypeEnum.Folder:
+
+                        break;
+
+                    case ItemTypeEnum.DataSource:
+
+                        break;
+                }
+                return true;
+            }
+            catch (Exception exception)
+            {
+
+                MessageBox.Show(exception.Message);
+            }
+            Cursor.Current = Cursors.Default;
+            return false;
+        }
+
+        #endregion
     }
 }
-
-//private void RefreshDestinationTreeView()
-//{
-//    if (tvReportServerDestination.InvokeRequired)
-//    {
-//        tvReportServerDestination.Invoke(new MethodInvoker(() => tvReportServerDestination.BeginUpdate()));
-//        tvReportServerDestination.Invoke(new MethodInvoker(() => tvReportServerDestination.Nodes.Clear()));
-//        tvReportServerDestination.Invoke(new MethodInvoker(() => tvReportServerDestination.Nodes.Add(TreeViewHandling.GetFolderAsNodes(ReportServerDestination.ReportsServerInstance))));
-//        tvReportServerDestination.Invoke(new MethodInvoker(() => tvReportServerDestination.EndUpdate()));
-//    }
-//    else
-//    {
-//        tvReportServerDestination.BeginUpdate();
-//        tvReportServerDestination.Nodes.Clear();
-//        tvReportServerDestination.Nodes.Add(TreeViewHandling.GetFolderAsNodes(ReportServerDestination.ReportsServerInstance));
-//        tvReportServerDestination.EndUpdate();
-//    }
-//}
-
-//private void RefreshSourceTreeView()
-//{
-//    if (tvReportServerDestination.InvokeRequired)
-//    {
-//        tvReportServerSource.Invoke(new MethodInvoker(() => tvReportServerSource.BeginUpdate()));
-//        tvReportServerSource.Invoke(new MethodInvoker(() => tvReportServerSource.Nodes.Clear()));
-//        tvReportServerSource.Invoke(new MethodInvoker(() => tvReportServerSource.Nodes.Add(TreeViewHandling.GetFolderAsNodes(ReportServerSource.ReportsServerInstance))));
-//        tvReportServerSource.Invoke(new MethodInvoker(() => tvReportServerSource.EndUpdate()));
-//    }
-//    else
-//    {
-//        tvReportServerSource.BeginUpdate();
-//        tvReportServerSource.Nodes.Clear();
-//        tvReportServerSource.Nodes.Add(TreeViewHandling.GetFolderAsNodes(ReportServerSource.ReportsServerInstance));
-//        tvReportServerSource.EndUpdate();
-//    }
-//}

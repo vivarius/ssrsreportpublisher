@@ -31,7 +31,7 @@ namespace SSRSPublisher
                     };
                 else
                 {
-                    throw new Exception("Merci de sélectionner une DataSource");
+                    throw new Exception("Please select a DataSource");
                 }
             }
             catch (Exception exception)

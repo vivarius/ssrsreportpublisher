@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using SSRSPublisher.ReportService2005;
 
 namespace SSRSPublisher
@@ -120,7 +121,7 @@ namespace SSRSPublisher
         public DataSource GetDataSource(string sharedDataSourcePath, string dataSourceName)
         {
             var dataSources = ReportsServerInstance.GetItemDataSources(sharedDataSourcePath);
-            
+
             return dataSources.Where(dataSource => dataSource.Name == dataSourceName).FirstOrDefault();
         }
 
@@ -135,22 +136,18 @@ namespace SSRSPublisher
 
             try
             {
-                DataSource[] dataSources = _reportsServerInstance.GetItemDataSources(_reportLocation + "/" + _report);
 
-                DataSourceReference dataSourceReference = new DataSourceReference
-                                                                                {
-                                                                                    Reference = _dataSourcePath + _dataSourceName
-                                                                                };
+                string fullReportPath = (_reportLocation + "/" + _report).Replace("//", @"/");
+                string fullDataSourcePath = (_dataSourcePath.Replace(_dataSourceName, string.Empty) + _dataSourceName).Replace(@"\", @"/");
 
-                dataSources[0].Item = dataSourceReference;
+                DataSource[] dataSources = _reportsServerInstance.GetItemDataSources(fullReportPath);
 
-                _reportsServerInstance.SetItemDataSources(_reportLocation + "/" + _report,
-                                                          dataSources);
+                DataSourceDefinition dataSourceDefinition = _reportsServerInstance.GetDataSourceContents(fullDataSourcePath);
 
-                //_reportsServerInstance.SetItemDataSources(_reportLocation + "/" + _report,
-                //                                          new[] {
-                //                                                    GetDataSource(_dataSourceLocation, _dataSourceName) 
-                //                                                 });
+                dataSources[0].Item = dataSourceDefinition;
+                dataSources[0].Name = _dataSourceName;
+
+                _reportsServerInstance.SetItemDataSources(fullReportPath, dataSources);
 
                 resVal = true;
             }
@@ -193,7 +190,16 @@ namespace SSRSPublisher
             return resVal;
         }
 
-        ///from server to server
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="_rsSource">Report Server Source object //ReportingService2005</param>
+        /// <param name="_reportNameSource">Report Source Name</param>
+        /// <param name="_reportSourcePath">Report Source path</param>
+        /// <param name="_reportDestinationPath">Report Destination Path</param>
+        /// <param name="_dataSource">Report Destination DataSource</param>
+        /// <param name="_dataSourceLocation">Report DataSource Path</param>
+        /// <returns>True or False</returns>
         public bool DeployReport(ReportingService2005 _rsSource,
                                  string _reportNameSource,
                                  string _reportSourcePath,
@@ -210,22 +216,29 @@ namespace SSRSPublisher
                 if (_rsSource == null)
                     return false;
 
+                _reportDefinition = _rsSource.GetReportDefinition(_reportSourcePath.Replace(@"\", "/"));
+
                 DeleteItem(ItemTypeEnum.Report,
                            _reportDestinationPath.Replace(_reportNameSource, string.Empty).Replace(@"\", "/"),
                            _reportNameSource);
-
-                _reportDefinition = _rsSource.GetReportDefinition(_reportSourcePath.Replace(@"\", "/"));
 
                 ReportsServerInstance.CreateReport(_reportNameSource,
                                                    _reportDestinationPath.Replace(_reportNameSource, string.Empty).Replace(@"\", "/"),
                                                    true,
                                                    _reportDefinition,
                                                    null);
-
-                AttachDataSourceToReport(_dataSource,
+                try
+                {
+                    AttachDataSourceToReport(_dataSource,
                                          _dataSourceLocation.Replace(_dataSource, string.Empty).Replace(@"\", "/"),
                                          _reportNameSource,
                                          _reportDestinationPath.Replace(_reportNameSource, string.Empty).Replace(@"\", "/"));
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show(string.Format("The Report {0} was created but the report's Datasource cannot be updated! Please do it manually... (if you want)", _reportNameSource));
+                }
+
                 resVal = true;
             }
             catch (Exception)
@@ -237,7 +250,15 @@ namespace SSRSPublisher
             return resVal;
         }
 
-        ///from local File to server
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="_rsSource">Report Server Source object //ReportingService2005</param>
+        /// <param name="_filePath">Report Source Path (local)</param>
+        /// <param name="_reportDestinationPath">Report Destination Path</param>
+        /// <param name="_dataSource">Report Destination DataSource</param>
+        /// <param name="_dataSourceLocation">Report DataSource Path</param>
+        /// <returns>True or False</returns>
         public bool DeployReport(ReportingService2005 _rsSource,
                                  string _filePath,
                                  string _reportDestinationPath,
@@ -267,18 +288,24 @@ namespace SSRSPublisher
                                                    true,
                                                    File.ReadAllBytes(_filePath),
                                                    null);
-
-                AttachDataSourceToReport(_dataSource,
-                                         _dataSourceLocation.Replace(_dataSource, string.Empty).Replace(@"\", "/"),
-                                         fileName,
-                                         _reportDestinationPath.Replace(fileName, string.Empty).Replace(@"\", "/"));
+                try
+                {
+                    AttachDataSourceToReport(_dataSource,
+                                             _dataSourceLocation.Replace(_dataSource, string.Empty).Replace(@"\", "/"),
+                                             fileName,
+                                             _reportDestinationPath.Replace(fileName, string.Empty).Replace(@"\", "/"));
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show(string.Format("The Report {0} was created but the report's Datasource cannot be updated! Please do it manually... (if you want)", fileName));
+                }
                 resVal = true;
+
             }
             catch (Exception)
             {
                 resVal = false;
             }
-
 
             return resVal;
         }
