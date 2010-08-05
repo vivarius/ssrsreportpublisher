@@ -258,7 +258,6 @@
     </Compile>
     <Compile Include="ReportServerProperties.cs" />
     <Compile Include="TreeViewHandling.cs" />
-    <Compile Include="UIReportsHandling.cs" />
     <Compile Include="Web References\ReportService2005\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
