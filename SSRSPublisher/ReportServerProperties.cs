@@ -28,7 +28,7 @@ namespace SSRSPublisher
             {
                 return _reportsServerInstance ?? (_reportsServerInstance = new ReportingService2005
                                                                                {
-                                                                                   Credentials = System.Net.CredentialCache.DefaultCredentials,
+                                                                                   Credentials = System.Net.CredentialCache.DefaultNetworkCredentials,
                                                                                    Url = ReportServer
                                                                                });
             }
@@ -140,12 +140,17 @@ namespace SSRSPublisher
                 string fullReportPath = (_reportLocation + "/" + _report).Replace("//", @"/");
                 string fullDataSourcePath = (_dataSourcePath.Replace(_dataSourceName, string.Empty) + _dataSourceName).Replace(@"\", @"/");
 
-                DataSource[] dataSources = _reportsServerInstance.GetItemDataSources(fullReportPath);
-
-                DataSourceDefinition dataSourceDefinition = _reportsServerInstance.GetDataSourceContents(fullDataSourcePath);
-
-                dataSources[0].Item = dataSourceDefinition;
-                dataSources[0].Name = _dataSourceName;
+                DataSource[] dataSources = new[]
+                                                  {
+                                                      new DataSource
+                                                            {
+                                                                Item = new DataSourceReference
+                                                                                              {
+                                                                                                  Reference = fullDataSourcePath
+                                                                                              }, 
+                                                                Name = _dataSourceName
+                                                            }
+                                                  };
 
                 _reportsServerInstance.SetItemDataSources(fullReportPath, dataSources);
 

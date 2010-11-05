@@ -28,6 +28,26 @@ namespace SSRSPublisher
 
         #region Events
 
+        private void tvReportServerSource_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if ((ItemTypeEnum)e.Node.Tag == ItemTypeEnum.Report)
+                PreviewReport(e.Node.TreeView);
+
+            if ((ItemTypeEnum)e.Node.Tag == ItemTypeEnum.DataSource)
+                EditDataSource(e.Node.TreeView);
+
+
+        }
+
+        private void tvReportServerDestination_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if ((ItemTypeEnum)e.Node.Tag == ItemTypeEnum.Report)
+                PreviewReport(e.Node.TreeView);
+
+            if ((ItemTypeEnum)e.Node.Tag == ItemTypeEnum.DataSource)
+                EditDataSource(e.Node.TreeView);
+        }
+
         private void btSettings_Click(object sender, EventArgs e)
         {
             new frmServers().ShowDialog();
@@ -79,6 +99,7 @@ namespace SSRSPublisher
         private void btLoadServers_Click(object sender, EventArgs e)
         {
             Cursor = Cursors.WaitCursor;
+
             if (backgroundWorker1.IsBusy != true)
             {
                 backgroundWorker1.RunWorkerAsync();
@@ -475,10 +496,8 @@ namespace SSRSPublisher
             }
         }
 
-        private void EditDataSource(object sender)
+        private void EditDataSource(TreeView treeView)
         {
-            TreeView treeView = (TreeView)((ContextMenuStrip)((ToolStripMenuItem)sender).Owner).SourceControl;
-
             if ((ItemTypeEnum)(treeView.SelectedNode.Tag) != ItemTypeEnum.DataSource)
             {
                 MessageBox.Show(@"Please choose a Datasource");
@@ -503,6 +522,10 @@ namespace SSRSPublisher
 
                 frmDataSourceDetail.DataSourceName = treeView.SelectedNode.Text;
 
+                CatalogItem[] catalogItems = reportServerProperties.ReportsServerInstance.ListDependentItems(treeView.SelectedNode.FullPath.Replace(treeView.Nodes[0].Text, string.Empty).Replace(@"\", "/"));
+
+                frmDataSourceDetail.DependentItems = catalogItems.Select(catalogItem => string.Format("{0}{1}", catalogItem.Path, catalogItem.Name)).ToList();
+
                 if (frmDataSourceDetail.ShowDialog() == DialogResult.OK)
                 {
                     string folder = treeView.SelectedNode.FullPath.Replace(treeView.Nodes[0].Text, string.Empty).Replace(@"\", "/").Replace(treeView.SelectedNode.Text, string.Empty);
@@ -518,6 +541,11 @@ namespace SSRSPublisher
                     }
                 }
             }
+        }
+
+        private void EditDataSource(object sender)
+        {
+            EditDataSource((TreeView)((ContextMenuStrip)((ToolStripMenuItem)sender).Owner).SourceControl);
         }
 
         private void CreateDatasource(object sender)

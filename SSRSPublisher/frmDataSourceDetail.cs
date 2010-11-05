@@ -1,4 +1,6 @@
-﻿using System.Windows.Forms;
+﻿using System.Collections.Generic;
+using System.Windows.Forms;
+using SSRSPublisher.ReportService2005;
 
 namespace SSRSPublisher
 {
@@ -11,6 +13,14 @@ namespace SSRSPublisher
         {
             get { return txNom.Text.Trim(); }
             set { txNom.Text = value; }
+        }
+
+        public List<string> DependentItems
+        {
+            set
+            {
+                lstDependentItems.Items.AddRange(value.ToArray());
+            }
         }
 
         public string SQLServer
@@ -33,7 +43,7 @@ namespace SSRSPublisher
         }
         #endregion
 
-        #region Events  
+        #region Events
         private void btOK_Click(object sender, System.EventArgs e)
         {
             string dataSourceName = txNom.Text.Trim();

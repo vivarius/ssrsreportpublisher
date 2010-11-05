@@ -36,6 +36,7 @@ namespace SSRSPublisher
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btSettings = new System.Windows.Forms.Button();
             this.lblBWInfo = new System.Windows.Forms.Label();
             this.btLoadServers = new System.Windows.Forms.Button();
             this.cmbProject = new System.Windows.Forms.ComboBox();
@@ -57,7 +58,6 @@ namespace SSRSPublisher
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.btSettings = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -108,6 +108,16 @@ namespace SSRSPublisher
             this.panel1.Size = new System.Drawing.Size(440, 47);
             this.panel1.TabIndex = 5;
             // 
+            // btSettings
+            // 
+            this.btSettings.Location = new System.Drawing.Point(3, 9);
+            this.btSettings.Name = "btSettings";
+            this.btSettings.Size = new System.Drawing.Size(58, 23);
+            this.btSettings.TabIndex = 3;
+            this.btSettings.Text = "Settings";
+            this.btSettings.UseVisualStyleBackColor = true;
+            this.btSettings.Click += new System.EventHandler(this.btSettings_Click);
+            // 
             // lblBWInfo
             // 
             this.lblBWInfo.AutoSize = true;
@@ -128,6 +138,7 @@ namespace SSRSPublisher
             // 
             // cmbProject
             // 
+            this.cmbProject.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbProject.FormattingEnabled = true;
             this.cmbProject.Location = new System.Drawing.Point(67, 10);
             this.cmbProject.Name = "cmbProject";
@@ -153,6 +164,7 @@ namespace SSRSPublisher
             this.tvReportServerSource.TabIndex = 3;
             this.tvReportServerSource.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.tvReportServerSource_ItemDrag);
             this.tvReportServerSource.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.tvReportServerSource_NodeMouseClick);
+            this.tvReportServerSource.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.tvReportServerSource_NodeMouseDoubleClick);
             this.tvReportServerSource.DragDrop += new System.Windows.Forms.DragEventHandler(this.tvReportServerSource_DragDrop);
             this.tvReportServerSource.DragEnter += new System.Windows.Forms.DragEventHandler(this.tvReportServerSource_DragEnter);
             // 
@@ -257,6 +269,7 @@ namespace SSRSPublisher
             this.tvReportServerDestination.TabIndex = 4;
             this.tvReportServerDestination.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.tvReportServerDestination_ItemDrag);
             this.tvReportServerDestination.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.tvReportServerDestination_NodeMouseClick);
+            this.tvReportServerDestination.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.tvReportServerDestination_NodeMouseDoubleClick);
             this.tvReportServerDestination.DragDrop += new System.Windows.Forms.DragEventHandler(this.tvReportServerDestination_DragDrop);
             this.tvReportServerDestination.DragEnter += new System.Windows.Forms.DragEventHandler(this.tvReportServerDestination_DragEnter);
             this.tvReportServerDestination.GiveFeedback += new System.Windows.Forms.GiveFeedbackEventHandler(this.tvReportServerDestination_GiveFeedback);
@@ -292,16 +305,6 @@ namespace SSRSPublisher
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
-            // 
-            // btSettings
-            // 
-            this.btSettings.Location = new System.Drawing.Point(3, 9);
-            this.btSettings.Name = "btSettings";
-            this.btSettings.Size = new System.Drawing.Size(58, 23);
-            this.btSettings.TabIndex = 3;
-            this.btSettings.Text = "Settings";
-            this.btSettings.UseVisualStyleBackColor = true;
-            this.btSettings.Click += new System.EventHandler(this.btSettings_Click);
             // 
             // frmMain
             // 

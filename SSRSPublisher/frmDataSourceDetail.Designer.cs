@@ -36,6 +36,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.txDBName = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.lstDependentItems = new System.Windows.Forms.ListBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // txNom
@@ -57,7 +59,7 @@
             // btCancel
             // 
             this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btCancel.Location = new System.Drawing.Point(204, 118);
+            this.btCancel.Location = new System.Drawing.Point(198, 274);
             this.btCancel.Name = "btCancel";
             this.btCancel.Size = new System.Drawing.Size(75, 32);
             this.btCancel.TabIndex = 5;
@@ -67,7 +69,7 @@
             // btOK
             // 
             this.btOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btOK.Location = new System.Drawing.Point(102, 118);
+            this.btOK.Location = new System.Drawing.Point(96, 274);
             this.btOK.Name = "btOK";
             this.btOK.Size = new System.Drawing.Size(75, 32);
             this.btOK.TabIndex = 4;
@@ -107,12 +109,31 @@
             this.label3.TabIndex = 10;
             this.label3.Text = "Database:";
             // 
+            // lstDependentItems
+            // 
+            this.lstDependentItems.FormattingEnabled = true;
+            this.lstDependentItems.Location = new System.Drawing.Point(128, 104);
+            this.lstDependentItems.Name = "lstDependentItems";
+            this.lstDependentItems.Size = new System.Drawing.Size(252, 147);
+            this.lstDependentItems.TabIndex = 12;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(19, 104);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(91, 13);
+            this.label4.TabIndex = 13;
+            this.label4.Text = "Dependent Items:";
+            // 
             // frmDataSourceDetail
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(392, 162);
+            this.ClientSize = new System.Drawing.Size(392, 328);
             this.ControlBox = false;
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.lstDependentItems);
             this.Controls.Add(this.txDBName);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.txServer);
@@ -139,5 +160,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txDBName;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ListBox lstDependentItems;
+        private System.Windows.Forms.Label label4;
     }
 }
