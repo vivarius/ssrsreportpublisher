@@ -2,7 +2,7 @@
 <Projects>
   <Project ItemNo="22EE0AFA-9982-4dd8-A41D-3F578006307F" >
     <srvsql1 Name="srv-sql3" URL="http://srv-sql3/ReportServer/ReportService2005.asmx" ReportPath="http://srv-sql3/ReportServer"/>
-    <srvsql2 Name="srv-sql3" URL="http://srv-sql3/ReportServer/ReportService2005.asmx" ReportPath="http://srv-sql3/ReportServer"/>
+    <srvsql2 Name="srv-sql7" URL="http://srv-sql7/ReportServer/ReportService2005.asmx" ReportPath="http://srv-sql7/ReportServer"/>
   </Project>
   <Project ItemNo="DAE7E3CB-3D26-4a40-8AD5-482E27AC5460">
     <srvsql1 Name="srv-sql1" URL="http://srv-sql1/ReportServer/ReportService2005.asmx" ReportPath="http://srv-sql1/ReportServer"/>

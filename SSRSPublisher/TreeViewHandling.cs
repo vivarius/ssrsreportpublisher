@@ -23,11 +23,11 @@ namespace SSRSPublisher
             return (FillTreeView("/", xRoot, reportingService2005, showDataSource));
         }
 
-        private static TreeNode FillTreeView(string Path, TreeNode ParentNode, ReportingService2005 reportingService2005, bool showDataSource)
+        private static TreeNode FillTreeView(string path, TreeNode parentNode, ReportingService2005 reportingService2005, bool showDataSource)
         {
             try
             {
-                CatalogItem[] catalogItems = reportingService2005.ListChildren(Path, false);
+                CatalogItem[] catalogItems = reportingService2005.ListChildren(path, false);
                 foreach (CatalogItem catalogItem in catalogItems)
                 {
                     switch (catalogItem.Type)
@@ -42,7 +42,7 @@ namespace SSRSPublisher
 
                             folderNode.Tag = catalogItem.Type;
                             folderNode.SelectedImageIndex = folderNode.ImageIndex;
-                            ParentNode.Nodes.Add(FillTreeView(catalogItem.Path, folderNode, reportingService2005, showDataSource));
+                            parentNode.Nodes.Add(FillTreeView(catalogItem.Path, folderNode, reportingService2005, showDataSource));
                             break;
                         case ItemTypeEnum.Report:
                             if (showDataSource)
@@ -56,7 +56,7 @@ namespace SSRSPublisher
 
                             reportNode.Tag = catalogItem.Type;
                             reportNode.SelectedImageIndex = reportNode.ImageIndex;
-                            ParentNode.Nodes.Add(reportNode);
+                            parentNode.Nodes.Add(reportNode);
                             break;
                         case ItemTypeEnum.DataSource:
                             //if (showDataSource)
@@ -70,7 +70,7 @@ namespace SSRSPublisher
                                                           };
 
                             dataSourceNode.SelectedImageIndex = dataSourceNode.ImageIndex;
-                            ParentNode.Nodes.Add(dataSourceNode);
+                            parentNode.Nodes.Add(dataSourceNode);
                             //}
                             break;
                     }
@@ -81,7 +81,7 @@ namespace SSRSPublisher
                 MessageBox.Show(string.Format(@"The Reports Server {0} is not available. Exception details: {1}", reportingService2005.Url, exception.Message));
             }
 
-            return ParentNode;
+            return parentNode;
         }
 
         public static List<TreeNode> GetNodes(TreeNodeCollection nodes)
@@ -110,20 +110,20 @@ namespace SSRSPublisher
             return newNodes;
         }
 
-        public static void CheckNodes(TreeNode Node)
+        public static void CheckNodes(TreeNode node)
         {
-            if (Node.Level == 0)
+            if (node.Level == 0)
                 return;
 
-            if (Node.Tag != null)
-                if (((ItemTypeEnum)(Node.Tag)) != ItemTypeEnum.Folder)
+            if (node.Tag != null)
+                if (((ItemTypeEnum)(node.Tag)) != ItemTypeEnum.Folder)
                     return;
 
-            List<TreeNode> listTreeNodes = GetNodes(Node.Nodes);
+            List<TreeNode> listTreeNodes = GetNodes(node.Nodes);
 
             foreach (TreeNode treeNode in listTreeNodes)
             {
-                treeNode.Checked = Node.Checked;
+                treeNode.Checked = node.Checked;
             }
         }
     }

@@ -66,7 +66,7 @@ namespace SSRSPublisher
         #endregion
 
         #region Methods
-        public bool CreateDataSource(string _dataSourceName, string _dataSourceLocation, string _sqlServerName, string _dbName)
+        public bool CreateDataSource(string dataSourceName, string dataSourceLocation, string sqlServerName, string dbName)
         {
             bool resVal = false;
 
@@ -74,8 +74,8 @@ namespace SSRSPublisher
                                                             {
                                                                 Extension = "SQL",
                                                                 ConnectString =
-                                                                    @"Data Source=" + _sqlServerName +
-                                                                    @";Initial Catalog=" + _dbName,
+                                                                    @"Data Source=" + sqlServerName +
+                                                                    @";Initial Catalog=" + dbName,
                                                                 ImpersonateUserSpecified = true,
                                                                 Prompt = null,
                                                                 WindowsCredentials = true,
@@ -84,8 +84,8 @@ namespace SSRSPublisher
                                                             };
             try
             {
-                _reportsServerInstance.CreateDataSource(_dataSourceName,
-                                     _dataSourceLocation,
+                _reportsServerInstance.CreateDataSource(dataSourceName,
+                                     dataSourceLocation,
                                      false,
                                      dataSourceDefinition,
                                      null);
@@ -101,13 +101,13 @@ namespace SSRSPublisher
 
         }
 
-        public bool CreateFolder(string _FolderDestinationPath, string _FolderName)
+        public bool CreateFolder(string folderDestinationPath, string folderName)
         {
             bool resVal = false;
 
             try
             {
-                _reportsServerInstance.CreateFolder(_FolderName, _FolderDestinationPath.Replace(@"\", "/"), null);
+                _reportsServerInstance.CreateFolder(folderName, folderDestinationPath.Replace(@"\", "/"), null);
                 resVal = true;
             }
             catch (Exception)
@@ -136,23 +136,68 @@ namespace SSRSPublisher
 
             try
             {
-
                 string fullReportPath = (_reportLocation + "/" + _report).Replace("//", @"/");
                 string fullDataSourcePath = (_dataSourcePath.Replace(_dataSourceName, string.Empty) + _dataSourceName).Replace(@"\", @"/");
 
-                DataSource[] dataSources = new[]
-                                                  {
-                                                      new DataSource
-                                                            {
-                                                                Item = new DataSourceReference
-                                                                                              {
-                                                                                                  Reference = fullDataSourcePath
-                                                                                              }, 
-                                                                Name = _dataSourceName
-                                                            }
-                                                  };
+                DataSource[] sharedDs = _reportsServerInstance.GetItemDataSources(fullReportPath);
 
-                _reportsServerInstance.SetItemDataSources(fullReportPath, dataSources);
+                DataSource[] targetDs = new DataSource[sharedDs.Count()];
+
+                int counter = 0;
+
+                foreach (var dataSource in sharedDs)
+                {
+                    DataSourceReference dsRef = new DataSourceReference
+                    {
+                        Reference = fullDataSourcePath
+                    };
+
+                    dataSource.Item = dsRef;
+
+                    targetDs[counter] = dataSource;
+                }
+
+                _reportsServerInstance.SetItemDataSources(fullReportPath, targetDs);
+
+                resVal = true;
+            }
+            catch (Exception)
+            {
+                resVal = false;
+            }
+
+            return resVal;
+        }
+
+
+        public bool AttachDataSourceToReport(ReportingService2005 rsSource, string dataSourceName, string dataSourcePath, string report, string reportLocation)
+        {
+            bool resVal = false;
+
+            try
+            {
+                string fullReportPath = (reportLocation + "/" + report).Replace("//", @"/");
+                string fullDataSourcePath = (dataSourcePath.Replace(dataSourceName, string.Empty) + dataSourceName).Replace(@"\", @"/");
+
+                DataSource[] sharedDs = _reportsServerInstance.GetItemDataSources(fullReportPath);
+
+                DataSource[] targetDs = new DataSource[sharedDs.Count()];
+
+                int counter = 0;
+
+                foreach (var dataSource in sharedDs)
+                {
+                    DataSourceReference dsRef = new DataSourceReference
+                    {
+                        Reference = fullDataSourcePath
+                    };
+
+                    dataSource.Item = dsRef;
+
+                    targetDs[counter] = dataSource;
+                }
+
+                _reportsServerInstance.SetItemDataSources(fullReportPath, targetDs);
 
                 resVal = true;
             }
@@ -198,50 +243,48 @@ namespace SSRSPublisher
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="_rsSource">Report Server Source object //ReportingService2005</param>
-        /// <param name="_reportNameSource">Report Source Name</param>
-        /// <param name="_reportSourcePath">Report Source path</param>
-        /// <param name="_reportDestinationPath">Report Destination Path</param>
-        /// <param name="_dataSource">Report Destination DataSource</param>
-        /// <param name="_dataSourceLocation">Report DataSource Path</param>
+        /// <param name="rsSource">Report Server Source object //ReportingService2005</param>
+        /// <param name="reportNameSource">Report Source Name</param>
+        /// <param name="reportSourcePath">Report Source path</param>
+        /// <param name="reportDestinationPath">Report Destination Path</param>
+        /// <param name="dataSource">Report Destination DataSource</param>
+        /// <param name="dataSourceLocation">Report DataSource Path</param>
         /// <returns>True or False</returns>
-        public bool DeployReport(ReportingService2005 _rsSource,
-                                 string _reportNameSource,
-                                 string _reportSourcePath,
-                                 string _reportDestinationPath,
-                                 string _dataSource,
-                                 string _dataSourceLocation)
+        public bool DeployReport(ReportingService2005 rsSource,
+                                 string reportNameSource,
+                                 string reportSourcePath,
+                                 string reportDestinationPath,
+                                 string dataSource,
+                                 string dataSourceLocation)
         {
             bool resVal = false;
 
-            byte[] _reportDefinition;
-
             try
             {
-                if (_rsSource == null)
+                if (rsSource == null)
                     return false;
 
-                _reportDefinition = _rsSource.GetReportDefinition(_reportSourcePath.Replace(@"\", "/"));
+                byte[] reportDefinition = rsSource.GetReportDefinition(reportSourcePath.Replace(@"\", "/"));
 
                 DeleteItem(ItemTypeEnum.Report,
-                           _reportDestinationPath.Replace(_reportNameSource, string.Empty).Replace(@"\", "/"),
-                           _reportNameSource);
+                           reportDestinationPath.Replace(reportNameSource, string.Empty).Replace(@"\", "/"),
+                           reportNameSource);
 
-                ReportsServerInstance.CreateReport(_reportNameSource,
-                                                   _reportDestinationPath.Replace(_reportNameSource, string.Empty).Replace(@"\", "/"),
+                ReportsServerInstance.CreateReport(reportNameSource,
+                                                   reportDestinationPath.Replace(reportNameSource, string.Empty).Replace(@"\", "/"),
                                                    true,
-                                                   _reportDefinition,
+                                                   reportDefinition,
                                                    null);
                 try
                 {
-                    AttachDataSourceToReport(_dataSource,
-                                         _dataSourceLocation.Replace(_dataSource, string.Empty).Replace(@"\", "/"),
-                                         _reportNameSource,
-                                         _reportDestinationPath.Replace(_reportNameSource, string.Empty).Replace(@"\", "/"));
+                    AttachDataSourceToReport(rsSource, dataSource,
+                                         dataSourceLocation.Replace(dataSource, string.Empty).Replace(@"\", "/"),
+                                         reportNameSource,
+                                         reportDestinationPath.Replace(reportNameSource, string.Empty).Replace(@"\", "/"));
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show(string.Format("The Report {0} was created but the report's Datasource cannot be updated! Please do it manually... (if you want)", _reportNameSource));
+                    MessageBox.Show(string.Format("The Report {0} was created but the report's Datasource cannot be updated! Please do it manually... (if you want)", reportNameSource));
                 }
 
                 resVal = true;
@@ -258,47 +301,47 @@ namespace SSRSPublisher
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="_rsSource">Report Server Source object //ReportingService2005</param>
-        /// <param name="_filePath">Report Source Path (local)</param>
-        /// <param name="_reportDestinationPath">Report Destination Path</param>
-        /// <param name="_dataSource">Report Destination DataSource</param>
-        /// <param name="_dataSourceLocation">Report DataSource Path</param>
+        /// <param name="rsSource">Report Server Source object //ReportingService2005</param>
+        /// <param name="filePath">Report Source Path (local)</param>
+        /// <param name="reportDestinationPath">Report Destination Path</param>
+        /// <param name="dataSource">Report Destination DataSource</param>
+        /// <param name="dataSourceLocation">Report DataSource Path</param>
         /// <returns>True or False</returns>
-        public bool DeployReport(ReportingService2005 _rsSource,
-                                 string _filePath,
-                                 string _reportDestinationPath,
-                                 string _dataSource,
-                                 string _dataSourceLocation)
+        public bool DeployReport(ReportingService2005 rsSource,
+                                 string filePath,
+                                 string reportDestinationPath,
+                                 string dataSource,
+                                 string dataSourceLocation)
         {
             bool resVal = false;
             try
             {
-                _reportDestinationPath = _reportDestinationPath.Substring(_reportDestinationPath.Length - 1, 1) == @"\"
-                           ? _reportDestinationPath.Substring(0, _reportDestinationPath.Length - 1).Replace(@"\", @"/")
-                           : _reportDestinationPath.Replace(@"\", @"/");
+                reportDestinationPath = reportDestinationPath.Substring(reportDestinationPath.Length - 1, 1) == @"\"
+                           ? reportDestinationPath.Substring(0, reportDestinationPath.Length - 1).Replace(@"\", @"/")
+                           : reportDestinationPath.Replace(@"\", @"/");
 
-                if (_rsSource == null)
+                if (rsSource == null)
                     return false;
 
-                FileInfo fileInfo = new FileInfo(_filePath);
+                var fileInfo = new FileInfo(filePath);
 
                 string fileName = fileInfo.Name.Replace(fileInfo.Extension, string.Empty);
 
                 DeleteItem(ItemTypeEnum.Report,
-                           _reportDestinationPath.Replace(fileName, string.Empty).Replace(@"\", "/"),
+                           reportDestinationPath.Replace(fileName, string.Empty).Replace(@"\", "/"),
                            fileName);
 
                 ReportsServerInstance.CreateReport(fileName,
-                                                   _reportDestinationPath.Replace(fileName, string.Empty).Replace(@"\", "/"),
+                                                   reportDestinationPath.Replace(fileName, string.Empty).Replace(@"\", "/"),
                                                    true,
-                                                   File.ReadAllBytes(_filePath),
+                                                   File.ReadAllBytes(filePath),
                                                    null);
                 try
                 {
-                    AttachDataSourceToReport(_dataSource,
-                                             _dataSourceLocation.Replace(_dataSource, string.Empty).Replace(@"\", "/"),
+                    AttachDataSourceToReport(dataSource,
+                                             dataSourceLocation.Replace(dataSource, string.Empty).Replace(@"\", "/"),
                                              fileName,
-                                             _reportDestinationPath.Replace(fileName, string.Empty).Replace(@"\", "/"));
+                                             reportDestinationPath.Replace(fileName, string.Empty).Replace(@"\", "/"));
                 }
                 catch (Exception)
                 {

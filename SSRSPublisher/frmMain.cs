@@ -524,7 +524,7 @@ namespace SSRSPublisher
 
                 CatalogItem[] catalogItems = reportServerProperties.ReportsServerInstance.ListDependentItems(treeView.SelectedNode.FullPath.Replace(treeView.Nodes[0].Text, string.Empty).Replace(@"\", "/"));
 
-                frmDataSourceDetail.DependentItems = catalogItems.Select(catalogItem => string.Format("{0}{1}", catalogItem.Path, catalogItem.Name)).ToList();
+                //frmDataSourceDetail.DependentItems = catalogItems.Select(catalogItem => string.Format("{0}{1}", catalogItem.Path, catalogItem.Name)).ToList();
 
                 if (frmDataSourceDetail.ShowDialog() == DialogResult.OK)
                 {

@@ -38,6 +38,7 @@
             // 
             // treeView1
             // 
+            this.treeView1.CheckBoxes = true;
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Top;
             this.treeView1.ImageIndex = 0;
             this.treeView1.ImageList = this.imageList1;

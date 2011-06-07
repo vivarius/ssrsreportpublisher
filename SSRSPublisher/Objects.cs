@@ -29,6 +29,9 @@ namespace SSRSPublisher
         readonly List<Project> _listProjects = new List<Project>();
         readonly XmlDocument _doc = new XmlDocument();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Projects"/> class.
+        /// </summary>
         public Projects()
         {
             try
@@ -58,12 +61,20 @@ namespace SSRSPublisher
 
         }
 
+        /// <summary>
+        /// Gets the list projects.
+        /// </summary>
+        /// <value>The list projects.</value>
         public List<Project> ListProjects
         {
             get { return _listProjects; }
         }
 
 
+        /// <summary>
+        /// Gets this instance.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<List<Project>> Get()
         {
             yield return ListProjects;
@@ -72,16 +83,35 @@ namespace SSRSPublisher
 
     public class ComboItem
     {
+        /// <summary>
+        /// Gets or sets the binding value.
+        /// </summary>
+        /// <value>The binding value.</value>
         public object BindingValue { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the display value.
+        /// </summary>
+        /// <value>The display value.</value>
         public object DisplayValue { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ComboItem"/> class.
+        /// </summary>
+        /// <param name="aBindingValue">A binding value.</param>
+        /// <param name="aDisplayValue">A display value.</param>
         public ComboItem(object aBindingValue, object aDisplayValue)
         {
             BindingValue = aBindingValue;
             DisplayValue = aDisplayValue;
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this instance.
+        /// </returns>
         public override String ToString()
         {
             return Convert.ToString(DisplayValue);

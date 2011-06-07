@@ -4,8 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Xml;
-using System.Xml.Linq;
-using System.Xml.XPath;
+
 
 namespace SSRSPublisher
 {
@@ -27,13 +26,13 @@ namespace SSRSPublisher
                 isUpdate = value;
                 if (!value)
                 {
-                    btOK.Text = "Insert";
+                    btOK.Text = @"Insert";
                     btRemove.Enabled = false;
                     btOK.Enabled = true;
                 }
                 else
                 {
-                    btOK.Text = "Update";
+                    btOK.Text = @"Update";
                     btRemove.Enabled = true;
                     btOK.Enabled = true;
                 }
@@ -82,7 +81,7 @@ namespace SSRSPublisher
             catch
             {
 
-                MessageBox.Show("Error! Please Retry!");
+                MessageBox.Show(@"Error! Please Retry!");
             }
 
         }
@@ -106,14 +105,17 @@ namespace SSRSPublisher
                     XmlNode xmlNode = xmlDocument.DocumentElement;
                     XmlNode projectNode = xmlNode.SelectSingleNode("/Projects/Project[@ItemNo='" + newElement.Id + "']");
 
-                    projectNode["srvsql1"].SetAttribute("Name", newElement.Server1);
-                    projectNode["srvsql1"].SetAttribute("URL", newElement.URL1);
-                    projectNode["srvsql1"].SetAttribute("ReportPath", newElement.ReportPath1);
+                    if (projectNode != null)
+                    {
+                        projectNode["srvsql1"].SetAttribute("Name", newElement.Server1);
+                        projectNode["srvsql1"].SetAttribute("URL", newElement.URL1);
+                        projectNode["srvsql1"].SetAttribute("ReportPath", newElement.ReportPath1);
 
 
-                    projectNode["srvsql2"].SetAttribute("Name", newElement.Server2);
-                    projectNode["srvsql2"].SetAttribute("URL", newElement.URL2);
-                    projectNode["srvsql2"].SetAttribute("ReportPath", newElement.ReportPath2);
+                        projectNode["srvsql2"].SetAttribute("Name", newElement.Server2);
+                        projectNode["srvsql2"].SetAttribute("URL", newElement.URL2);
+                        projectNode["srvsql2"].SetAttribute("ReportPath", newElement.ReportPath2);
+                    }
                 }
                 else
                 {
@@ -163,7 +165,7 @@ namespace SSRSPublisher
 
         private void btRemove_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Do you want to delete this project?", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+            if (MessageBox.Show(@"Do you want to delete this project?", @"Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 try
                 {
@@ -173,8 +175,11 @@ namespace SSRSPublisher
                     if (IsUpdate)
                     {
                         XmlNode xmlNode = xmlDocument.DocumentElement;
-                        XmlNode projectNode = xmlNode.SelectSingleNode("/Projects/Project[@ItemNo='" + ((Project)propertyGridServers.SelectedObject).Id + "']");
-                        xmlDocument.SelectSingleNode("/Projects").RemoveChild(projectNode);
+                        if (xmlNode != null)
+                        {
+                            XmlNode projectNode = xmlNode.SelectSingleNode("/Projects/Project[@ItemNo='" + ((Project)propertyGridServers.SelectedObject).Id + "']");
+                            xmlDocument.SelectSingleNode("/Projects").RemoveChild(projectNode);
+                        }
                         xmlDocument.Save(Directory.GetCurrentDirectory() + "/settings.xml");
                         InitializeProjectsList();
                         propertyGridServers.SelectedObject = null;
@@ -183,7 +188,7 @@ namespace SSRSPublisher
                 catch (Exception)
                 {
 
-                    MessageBox.Show("Impossible to remove this project");
+                    MessageBox.Show(@"Impossible to remove this project");
                 }
 
             }
